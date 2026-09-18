@@ -73,7 +73,7 @@ content build <content-root> [--godot <bin>] [--project <dir>] [--out <file.pck>
 - Path: `shared/contract/capabilities.json` (produced by the engine build).
 
 ```json
-{ "engine": "1.2.0", "schema": "1.2", "schemaSupported": ["1"],
+{ "engine": "1.2.0", "schema": "1.3", "schemaSupported": ["1"],
   "capabilities": [ { "name": "world.stream", "version": "1.0", "status": "enabled" } ] }
 ```
 
@@ -95,15 +95,15 @@ At release time the engine produces `release.json` (in the same batch as the `co
 {
   "engine": "0.1.0",
   "godot": "4.7.2",
-  "schema": "1.2",
+  "schema": "1.3",
   "schemaSupported": ["1"],
-  "capabilities": { "total": 36, "enabled": 36, "deferred": 0, "digest": "sha256:…" },
+  "capabilities": { "total": 38, "enabled": 38, "deferred": 0, "digest": "sha256:…" },
   "artifacts": {
     "contentCli": "content",
     "devkitLite": "engine-devkit-lite-0.1.0.zip",
     "contract": "shared/contract",
     "capabilities": "App/engine/sdk/capabilities.json",
-    "contentSchema": "App/engine/sdk/schema/content-1.2.json"
+    "contentSchema": "App/engine/sdk/schema/content-1.3.json"
   }
 }
 ```

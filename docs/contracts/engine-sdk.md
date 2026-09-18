@@ -23,6 +23,7 @@
 | `net.client` | 1.0 | `autoload/net_client.gd` | Nakama client (connect/match/chat/ranking/party/cloud save) |
 | `stats.core` | 1.0 | `autoload/combat.gd` | Stat and equipment modifiers |
 | `effect.apply` | 1.0 | `Combat.damage/apply_damage` | Damage/effect resolution |
+| `effect.aura` | 1.0 | `autoload/combat.gd` | Effect/aura runtime: `statModifiers` (flat/percent), `maxStacks`, `stackMode refresh/stack`, `durationMs` expiry |
 | `camera.control` | 1.0 | `engine/runtime/camera_follow.gd` | Camera follow / rotation / distance (zoom) / collision handling / shake |
 | `input.action` | 1.0 | `CharacterController` + `FlightPlayer` + Godot Input actions | Action-based input (keyboard `ui_*` / `move_*` + touch joystick `touch_dir`) |
 | `movement.character` | 1.0 | `engine/runtime/character_controller.gd` | Character movement (walk/sprint/jump/gravity/ground check/climb/fly/mount), Def-driven |
@@ -53,6 +54,7 @@
 | `entity.spawn` | 1.0 | `autoload/entities.gd` | Runtime entity registration (Def→runtime state; event `entity_spawned`) |
 | `entity.query` | 1.0 | `autoload/entities.gd` | Entity queries (by def/type/alive/in range; `entity_despawned`) |
 | `combat.timeline` | 1.0 | `autoload/combat.gd` | Ability timeline: castMs/cooldown/cooldown group/range validation + effect resolution |
+| `ability.grant` | 1.0 | `autoload/player.gd` | Abilities granted by equipped items (`item.grantsAbility`), active while equipped |
 
 > Must match the `enabled` set in `App/engine/sdk/capabilities.json` (CI validation).
 
@@ -146,6 +148,11 @@ Targeting.nearest(candidates, origin, radius?, exclude_id?) ; in_radius(...) ; b
 Interaction.range_of(def_id) ; in_range(pos, target, def_id) ; run(def_id, actor?)
 # Entities (entity.spawn / entity.query)
 Entities.spawn(def_id, pos?, props?) ; query(filters) ; entity(id) ; despawn(id) ; all() ; count() ; clear()
+# Effects / auras (effect.aura)
+Combat.apply_effect(rt, effect_id, source_id?) ; auras(rt) ; aura_stacks(rt, effect_id)
+Combat.stat_modifiers(rt) ; effective_stats(rt, base_stats)
+# Granted abilities (ability.grant)
+Player.active_abilities()
 # Ability timeline (combat.timeline)
 Combat.begin_cast(ability_id, caster_rt, target_rt) ; cooldown_ready(caster_id, ability_id)
 # Lifecycle dispatch (engine-sdk §5; backed by Hooks)

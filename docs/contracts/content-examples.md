@@ -191,3 +191,13 @@ See [content-package.md](content-package.md) §2.
 { "type": "fx", "id": "fx_slash", "scenePath": "fx/slash.tscn", "attach": "target", "durationMs": 300 }
 ```
 ❌ `scenePath` points to a non-existent `.tscn` (`fx.play` will return null); `attach` is not `self/target/point`.
+
+## 24. `item.grantsAbility` / `ability.source` (granted abilities)
+
+```json
+{ "type": "item", "id": "item_artifact_caps", "labelKey": "ITEM_ARTIFACT",
+  "category": "artifact", "icon": "icon", "grantsAbility": ["ability_starfall"] }
+{ "type": "ability", "id": "ability_starfall", "source": "artifact", "target": "enemy",
+  "range": 8.0, "cooldownMs": 4000, "effects": ["effect_caps"] }
+```
+❌ `grantsAbility` points to a missing `ability` (`REF_NOT_FOUND`); `source` not in `player/weapon/artifact`.

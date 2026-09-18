@@ -147,6 +147,7 @@ See [content-package.md](content-package.md).
 |---|---|---|---|
 | `category` | enum | Yes | `weapon/armor/artifact/consumable/quest/resource` |
 | `slot` | string | No | Equipment slot id (references `equipment.slots[]`, §25) |
+| `grantsAbility[]` | reference | No | Abilities granted while equipped (capability `ability.grant`); references `ability` Defs |
 | `stats` | object | No | Values (§13) |
 | `stack` | int | No | Stack limit |
 | `icon` | reference | Yes | Icon |
@@ -192,6 +193,7 @@ See [content-package.md](content-package.md).
 | `castMs` | int | No | Cast time |
 | `range` | number | No | Range (meters) |
 | `target` | enum | Yes | `self/enemy/ally/point/area` |
+| `source` | enum | No | `player/weapon/artifact`; advisory source for granted abilities (capability `ability.grant`) |
 | `effects[]` | reference | Yes | Effects (§15) |
 | `script` | script reference | No | Special logic |
 
@@ -201,7 +203,7 @@ See [content-package.md](content-package.md).
 |---|---|---|---|
 | `kind` | enum | Yes | `damage/heal/buff/debuff/summon` |
 | `amount` | number/formula | No | Value |
-| `statModifiers[]` | reference | No | Attribute modifiers |
+| `statModifiers[]` | reference | No | Attribute modifiers (`{stat,op:flat/percent,value}`); applied by capability `effect.aura` |
 | `durationMs` | int | No | Duration |
 | `stacks` / `maxStacks` | int | No | Initial stacks / max stacks |
 | `stackMode` | enum | No | `refresh` (re-apply refreshes duration) / `stack` (accumulate stacks) |
