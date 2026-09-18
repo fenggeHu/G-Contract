@@ -1,24 +1,41 @@
-name: 能力请求（Capability Request）
-description: 需要引擎新增通用能力、放宽版本或修改契约
+name: Capability Request
+description: Request a new generic engine capability, a version relaxation, or a contract change
 title: "[capability] "
 labels: ["capability"]
 body:
   - type: textarea
     id: need
-    attributes: { label: 需求描述, description: 要做什么玩法/内容，为什么现有能力不足 }
-    validations: { required: true }
+    attributes:
+      label: Requirement
+      description: What gameplay/content you want to build, and why the current capabilities are insufficient.
+    validations:
+      required: true
   - type: input
     id: capability
-    attributes: { label: 建议能力名与版本, placeholder: "如 region.trigger@1.0" }
-    validations: { required: true }
+    attributes:
+      label: Proposed capability name and version
+      placeholder: "e.g. region.trigger@1.0"
+    validations:
+      required: true
   - type: textarea
     id: generality
-    attributes: { label: 通用性说明, description: 至少 2 个内容包可复用（“仅一处需要”是设计失败信号） }
-    validations: { required: true }
+    attributes:
+      label: Generality
+      description: Must be reusable by at least 2 content packs ("needed in only one place" is a design smell).
+    validations:
+      required: true
   - type: dropdown
     id: target
-    attributes: { label: 目标能力状态, options: ["新增能力","enabled/deferred 状态变更","Schema 字段新增/变更","协议消息变更"] }
-    validations: { required: true }
+    attributes:
+      label: Target
+      options:
+        - New capability
+        - enabled/deferred status change
+        - Schema field added/changed
+        - Protocol message change
+    validations:
+      required: true
   - type: input
     id: deadline
-    attributes: { label: 期望时间 / 里程碑 }
+    attributes:
+      label: Expected time / milestone

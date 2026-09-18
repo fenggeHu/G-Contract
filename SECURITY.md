@@ -1,10 +1,10 @@
-# 安全策略
+# Security Policy
 
-## 报告方式
-请**不要**在公开 Issue 披露安全问题。发送邮件至平台维护者（GitHub 主页可见联系方式），或使用仓库的“Report a vulnerability”。
+## Reporting
+Please **do not** disclose security issues in public issues. Email the platform maintainers (contact details are available on their GitHub profile), or use this repository's "Report a vulnerability" flow.
 
-## 范围
-契约文本、示例、Schema、协议/模型产物。**不含**引擎/服务端/内容实现。
+## Scope
+Contract text, examples, Schema, and protocol/model artifacts. This **does not** include engine, server, or content implementations.
 
-## 处理
-收到后 3 个工作日内确认；修复后在本仓或对应平台仓公告。
+## Handling
+We acknowledge within 3 business days and announce the fix in this repository or the relevant platform repository.

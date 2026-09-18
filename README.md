@@ -1,29 +1,31 @@
-# G3 契约仓（G-Contract）
+# G3 Contract Repository (G-Contract)
 
-面向**内容制作方**的公开契约与对接仓。**只读镜像**：由平台从 `G_Shared` 发布，请勿在本仓直接修改契约（改动一律走 Issue → 平台契约 PR）。
+Public contract and integration repository for **content creators**. It is a **read-only mirror** published by the platform from `G_Shared`; do not edit contracts directly in this repository (all changes go through an Issue → platform contract PR).
 
-## 内容
-- `shared/contract/`：`capabilities.json`、`content-<ver>.json`（内容 Schema）、入口点 `def/manifest/defs-file.json`
-- `shared/protocol/`、`shared/model/`：协议 IDL 与共享模型
-- `docs/contracts/`：字段级契约与工具链（Schema/示例/包/CLI/SDK/事件/钩子/迁移/协议/存档）
+> **Working language: English.** Please file issues, pull requests, and comments in English so all parties can collaborate. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## 使用（不依赖平台源码）
+## Contents
+- `shared/contract/`: `capabilities.json`, `content-<ver>.json` (content Schema), entry points `def/manifest/defs-file.json`
+- `shared/protocol/`, `shared/model/`: protocol IDL and shared models
+- `docs/contracts/`: field-level contracts and tooling (Schema / examples / package / CLI / SDK / events / hooks / migrations / protocol / save)
+
+## Usage (no platform source required)
 ```bash
-# 1) 取契约（pin 版本见 Release）
-# 2) 校验：能力/schema 兼容 + 引用/依赖/命名/本地化/授权
+# 1) Get the contract (see Releases for pinned versions)
+# 2) Validate: capability/schema compatibility + references/dependencies/naming/localization/licensing
 content verify-release --release release.json --caps shared/contract/capabilities.json
-content validate --sdk <dir> --content <你的内容根>   # <dir> 含 capabilities.json 与 schema/content-<ver>.json
-content lint --sdk <dir> --content <你的内容根>
+content validate --sdk <dir> --content <your content root>   # <dir> contains capabilities.json and schema/content-<ver>.json
+content lint --sdk <dir> --content <your content root>
 ```
-Schema 版本 `MAJOR.MINOR` 独立于引擎；引擎声明支持的**主版本**集合见 `capabilities.json.schemaSupported`。
+Schema version `MAJOR.MINOR` is independent of the engine; the engine's supported **major** versions are listed in `capabilities.json.schemaSupported`.
 
-## 产物命名（发布 Release）
-`content`（CLI）、`contract-<schema>.zip`、`release.json`、`engine-devkit-lite-<ver>.zip`。
+## Artifact naming (Releases)
+`content` (CLI), `contract.zip`, `release.json`, `engine-devkit-lite-<ver>.zip`.
 
-## 反馈与能力请求
-- 缺陷 / 契约歧义 / 新能力：使用本仓 Issue 模板（`bug` / `capability-request` / `content-handoff`）。
-- 变更流程：Issue → 平台评估 → 契约 PR → 发版公告（CHANGELOG）→ 消费方自行 pin。
+## Feedback and capability requests
+- Bugs / contract ambiguity / new capabilities: use this repository's issue templates (`bug` / `capability-request` / `content-handoff`).
+- Change flow: Issue → platform evaluation → contract PR → release announcement (CHANGELOG) → consumers pin the version themselves.
 
-## 许可与安全
-- 契约与示例文本：**Apache-2.0**（见 `LICENSE`）。
-- 安全问题请按 `SECURITY.md` 私下报告。
+## License and security
+- Contract and example text: **Apache-2.0** (see `LICENSE`).
+- For security issues, report privately per [SECURITY.md](SECURITY.md).

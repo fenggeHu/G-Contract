@@ -1,16 +1,23 @@
-name: 缺陷 / 契约歧义（Bug）
-description: 契约文本、Schema、示例、协议/模型产物的问题
+name: Bug / Contract ambiguity
+description: Problems in contract text, Schema, examples, or protocol/model artifacts
 title: "[bug] "
 labels: ["bug"]
 body:
   - type: textarea
     id: what
-    attributes: { label: 现象与期望 }
-    validations: { required: true }
+    attributes:
+      label: Symptom and expectation
+      description: What you observed, what you expected, and why it matters.
+    validations:
+      required: true
   - type: textarea
     id: evidence
-    attributes: { label: 证据, description: 契约片段 / 命令输出 / 链接 }
-    validations: { required: true }
+    attributes:
+      label: Evidence
+      description: Contract snippet / command output / links
+    validations:
+      required: true
   - type: input
     id: version
-    attributes: { label: 契约版本 / commit }
+    attributes:
+      label: Contract version / commit
