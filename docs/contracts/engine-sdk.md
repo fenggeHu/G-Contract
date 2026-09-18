@@ -150,6 +150,8 @@ Combat.begin_cast(ability_id, caster_rt, target_rt) ; cooldown_ready(caster_id, 
 Lifecycle.dispatch(method, args?)     # 调用 g3_lifecycle 组内同名方法
 # 钩子（hooks.md；内容可选用）
 Hooks.register(domain, hook, cb, priority?) ; emit(domain, hook, args?) ; is_known(domain, hook) ; count(domain, hook)
+# 隐私（PS-06；上传类须先同意）
+Privacy.consent() ; set_consent(v) ; delete_local_data()
 # 日志 / 指标（observability.md §7；内容可选用）
 Log.info(cat, msg, fields?) ; warn ; error ; debug ; trace ; fatal ; set_level(cat, level) ; is_enabled(level, cat)
 Metrics.inc(name, n?) ; counter(name) ; observe(name, ms) ; timer_stats(name) ; snapshot() ; flush()
