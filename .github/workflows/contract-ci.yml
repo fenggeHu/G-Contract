@@ -22,3 +22,19 @@ jobs:
           if grep -rnE "\.\./(architecture|iterations|product|processes)/|\.\./\.\./CHANGELOG" docs shared; then
             echo "发现指向私有文档的引用"; exit 1
           fi
+  mirror-guard:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: 只读镜像守卫（禁止直接改镜像文件）
+        run: |
+          base="origin/${{ github.base_ref }}"
+          changed="$(git diff --name-only "$base"...HEAD || true)"
+          if echo "$changed" | grep -qE '^(shared/|docs/contracts/|LICENSE$|README\.md$|SECURITY\.md$|\.github/)'; then
+            echo "本仓为平台生成的**只读镜像**，禁止直接修改契约/文档/模板。"
+            echo "请改为在 G-Contract Issues 提出（bug / capability-request / content-handoff），由平台评估并发布。"
+            echo "变更文件："; echo "$changed" | grep -E '^(shared/|docs/contracts/|LICENSE$|README\.md$|SECURITY\.md$|\.github/)'
+            exit 1
+          fi
