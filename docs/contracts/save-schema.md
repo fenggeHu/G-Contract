@@ -3,7 +3,7 @@
 - 状态：生效中
 - 更新日期：2026-09-17
 
-> 覆盖**离线（本地权威）**与**登录（云存档）**两种模式。详见 ../architecture/persistence.md。
+> 覆盖**离线（本地权威）**与**登录（云存档）**两种模式。详见 平台内部文档。
 
 ## 1. 存储
 
@@ -11,7 +11,7 @@
 - **备份槽**：`user://save.bak`（上一份可用主存档，写入前轮转）；主存档损坏时回退。
 - **云端**：Nakama 对象存储（`collection=g3`，`key=progress`；登录时权威/备份）——存**裸快照**（不含信封）。
 - **outbox**：`user://save.outbox.json`（待上行快照队列，幂等键 + 顺序重放）。
-- 快照带 `version`；服务端由 Nakama 承载（见 ../architecture/technology-stack.md）。
+- 快照带 `version`；服务端由 Nakama 承载（见 平台内部文档）。
 
 ## 2. 快照结构
 

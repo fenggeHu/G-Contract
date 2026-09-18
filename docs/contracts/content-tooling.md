@@ -83,7 +83,7 @@ content build <content-root> [--godot <bin>] [--project <dir>] [--out <file.pck>
 
 - **内容流水线**：`validate` + `lint`（每次内容提交）。
 - **引擎流水线**：编译 + 单元 + 导出 `capabilities.json`。
-- **契约测试**：引擎版本矩阵上加载冒烟（见 ../architecture/testing.md）。
+- **契约测试**：引擎版本矩阵上加载冒烟（见 平台内部文档）。
 - **内容仓 CI 模板**：随 devkit-lite 发布（`ci/content-ci.yml`）；世界组复制到 `.github/workflows/` 即得「pin 校验 + validate + lint」流水线。
 - 兼容判定：`content validate` 按 `schemaSupported` 接受**主版本受支持**的包（非当前版本仅告警）；校验 `requires.engine` 区间与能力版本下限，不满足即拒绝。
 

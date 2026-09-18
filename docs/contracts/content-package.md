@@ -18,7 +18,7 @@ G_World/
   packs/dlc_northlands/          # 后续新增内容包，不改引擎
 ```
 
-`G_Engine/` 与 `G_World/` **仓库与 CI 边界分离**；内容以 PCK 交付（`_meta.json` 声明 `content` 版本与 `schema_major`），各自版本、各自权限。内容变更**绝不触发**引擎重新编译。详见 ../architecture/repository-layout.md。
+`G_Engine/` 与 `G_World/` **仓库与 CI 边界分离**；内容以 PCK 交付（`_meta.json` 声明 `content` 版本与 `schema_major`），各自版本、各自权限。内容变更**绝不触发**引擎重新编译。详见 平台内部文档。
 
 `_meta.json`（由 `content build` 生成于内容根，随 PCK 打包）：
 ```json
@@ -53,7 +53,7 @@ G_World/
 
 引擎启动时校验：能力缺失 / 版本不满足 / 依赖缺失 → **拒绝加载并给出可读修复建议**。
 
-**i18n（可选）**：声明 `entry.i18n` 后，该包进入**强校验**——Def 的 `labelKey` 与对话 `textKey` 必须在每个 locale 列有非空翻译（`content lint` 报 `LOC_KEY_MISSING`）。CSV 约定与运行时见 ../architecture/localization.md。
+**i18n（可选）**：声明 `entry.i18n` 后，该包进入**强校验**——Def 的 `labelKey` 与对话 `textKey` 必须在每个 locale 列有非空翻译（`content lint` 报 `LOC_KEY_MISSING`）。CSV 约定与运行时见 平台内部文档。
 
 ## 3. Def 规范（数据驱动，无代码）
 
