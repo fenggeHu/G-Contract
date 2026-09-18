@@ -1,95 +1,95 @@
-# 契约：内容工具链（Schema / 校验器）
+# Contract: Content Toolchain (Schema / Validator)
 
-- 状态：生效中
-- 更新日期：2026-09-17
+- Status: Active
+- Updated: 2026-09-17
 
-> 内容契约的**工具实现规范**：机器可读 Schema、校验器 I/O、能力矩阵。字段语义见 [content-schema.md](content-schema.md)。
+> The **tooling implementation specification** for the content contract: machine-readable Schema, validator I/O, capability matrix. For field semantics, see [content-schema.md](content-schema.md).
 
-## 1. 机器可读 Schema
+## 1. Machine-Readable Schema
 
-| 项 | 定义 |
+| Item | Definition |
 |---|---|
-| 生成物 | `shared/contract/content-<ver>.json`（JSON Schema 2020-12） |
-| 入口点 | `shared/contract/{def,manifest,defs-file}.json`：按文件类型指向 `$defs/def` / `$defs/manifest`，供 IDE / 工具校验 |
-| 唯一来源 | `App/engine/sdk/schema/`（**禁止手改生成物**）；协议/模型 IDL 源在 `App/engine/sdk/{protocol,model}/` |
-| 结构 | 每个 Def 类型一个 `$defs` 条目；公共字段（`type/id/labelKey/tags`）；引用用 `$ref` |
-| 版本 | `MAJOR.MINOR`，随 `content-schema.md` |
+| Generated artifact | `shared/contract/content-<ver>.json` (JSON Schema 2020-12) |
+| Entry points | `shared/contract/{def,manifest,defs-file}.json`: point to `$defs/def` / `$defs/manifest` by file type, for IDE / tool validation |
+| Single source of truth | `App/engine/sdk/schema/` (**editing generated artifacts by hand is forbidden**); protocol/model IDL sources are in `App/engine/sdk/{protocol,model}/` |
+| Structure | One `$defs` entry per Def type; common fields (`type/id/labelKey/tags`); references use `$ref` |
+| Version | `MAJOR.MINOR`, following `content-schema.md` |
 
-> **IDE 集成**：将 `**/defs/*.json` 映射到 `defs-file.json`、`**/manifest.json` 映射到 `manifest.json`（如 VS Code `json.schemas`），即可得字段级补全与校验；入口点相对引用同目录的 `content-<ver>.json`。示例见 [content-examples.md](content-examples.md)。
+> **IDE integration**: map `**/defs/*.json` to `defs-file.json` and `**/manifest.json` to `manifest.json` (e.g. VS Code `json.schemas`) to get field-level completion and validation; the entry point relatively references `content-<ver>.json` in the same directory. For examples, see [content-examples.md](content-examples.md).
 
-## 2. 校验器 CLI `content`
+## 2. Validator CLI `content`
 
-| 命令 | 作用 |
+| Command | Purpose |
 |---|---|
-| `content validate <pack>` | Schema + 引用 + 依赖 + 能力 |
-| `content lint <pack>` | 命名 + 本地化 Key + 授权（`licenses.json`） |
-| `content build <pack>` | 校验门（validate+lint）+ 生成 `_meta.json` +（`--godot`）导出 PCK |
-| `content preview <scene>` | 解析 scene Def → `.tscn` 路径；`--godot` 时启动引擎预览 |
-| `content diff <a> <b>` | 内容差异（`type:id` 增删改；信息性，退出码 0）；参数可为目录或快照文件 |
-| `content snapshot <root>` | 导出 Def 快照（`--out`，默认 `dist/defs.snapshot.json`），供回归比对 |
-| `content i18n-template <pack>` | 生成/刷新翻译 CSV 模板（保留已有译文，补全 key） |
-| `content perf` | 跑世界基准或 `--scene <id>`；可选 p95/max 预算门（`--budget-p95` / `--budget-max`，0=不设门） |
-| `content playtest <scene>` | 无头自动运行内容场景并**断言无错误**（H1 量化门） |
-| `content release` | 产出 `dist/release.json`（版本矩阵 + 制品清单） |
-| `content verify-release` | 校验 `release.json` 与契约一致（消费侧 pin 前置） |
-| `content bake-world` | 烘焙世界图俯瞰贴图 → `<pack>/world/<x>_<y>.jpg`（1024px/chunk） |
+| `content validate <pack>` | Schema + references + dependencies + capabilities |
+| `content lint <pack>` | Naming + localization keys + licensing (`licenses.json`) |
+| `content build <pack>` | Validation gate (validate+lint) + generate `_meta.json` + (`--godot`) export PCK |
+| `content preview <scene>` | Resolve the scene Def → `.tscn` path; with `--godot`, launch the engine preview |
+| `content diff <a> <b>` | Content differences (`type:id` additions/removals/changes; informational, exit code 0); arguments may be directories or snapshot files |
+| `content snapshot <root>` | Export a Def snapshot (`--out`, default `dist/defs.snapshot.json`) for regression comparison |
+| `content i18n-template <pack>` | Generate/refresh the translation CSV template (preserve existing translations, fill in missing keys) |
+| `content perf` | Run the world benchmark or `--scene <id>`; optional p95/max budget gates (`--budget-p95` / `--budget-max`, 0 = no gate) |
+| `content playtest <scene>` | Headlessly auto-run a content scene and **assert no errors** (H1 quantitative gate) |
+| `content release` | Produce `dist/release.json` (version matrix + artifact manifest) |
+| `content verify-release` | Validate that `release.json` is consistent with the contract (prerequisite for consumer-side pinning) |
+| `content bake-world` | Bake the world map overhead texture → `<pack>/world/<x>_<y>.jpg` (1024px/chunk) |
 
 **I/O**
-- 参数：包路径 / 场景。
-- `--json`：单个结果对象 `{ ok, errors[], warnings[] }`。
-- 退出码：`0` 成功 · `2` usage · `3` schema · `4` dependency · `5` lint · `6` internal。
-- 文本模式对每个错误/告警打印 **`hint:` 修复提示**（按错误码）；错误码→提示见 CLI 实现与本文 §错误码。
+- Arguments: pack path / scene.
+- `--json`: a single result object `{ ok, errors[], warnings[] }`.
+- Exit codes: `0` success · `2` usage · `3` schema · `4` dependency · `5` lint · `6` internal.
+- In text mode, print a **`hint:` remediation tip** for each error/warning (by error code); for error code → tip, see the CLI implementation and §Error Codes below.
 
-**`content build` 用法**
+**`content build` usage**
 ```
 content build <content-root> [--godot <bin>] [--project <dir>] [--out <file.pck>] [--content-version <v>]
 ```
-1. 先过 `validate` + `lint` 门（任一失败即停）。
-2. 在内容根写 `_meta.json`：`{ "content": <版本>, "schema_major": "<主版本>" }`（引擎启动据此拒绝不兼容内容）。
-3. 提供 `--godot` 时执行 `godot --headless --path <project> --export-pack content_pck <out>`；`--project` 默认取内容根父目录，`--out` 默认 `<project>/../content-<版本>.pck`。未提供 `--godot` 只生成 `_meta.json`（告警提示）。
+1. First pass the `validate` + `lint` gate (stop on any failure).
+2. Write `_meta.json` at the content root: `{ "content": <version>, "schema_major": "<major>" }` (the engine refuses incompatible content based on this at startup).
+3. When `--godot` is provided, run `godot --headless --path <project> --export-pack content_pck <out>`; `--project` defaults to the parent directory of the content root, and `--out` defaults to `<project>/../content-<version>.pck`. Without `--godot`, only `_meta.json` is generated (with a warning).
 
-**`content diff` 用法**：`content diff <A> <B>` 比较两处 Def 集合（规范化 JSON），输出 `+ / - / ~` 与计数；参数可为**内容根目录**或 **`content snapshot` 快照文件**。`--json` 输出 `{added,removed,changed}`。用于内容回归与评审（信息性，不失败）。
+**`content diff` usage**: `content diff <A> <B>` compares two sets of Defs (normalized JSON), outputting `+ / - / ~` and counts; arguments may be a **content root directory** or a **`content snapshot` snapshot file**. `--json` outputs `{added,removed,changed}`. Used for content regression and review (informational, does not fail).
 
-**`content snapshot` 用法**：`content snapshot <root> [--out <file>]` 导出 `type:id → 原始 Def` 快照；配合 `content diff <快照> <内容>` 做回归（golden 基线）。
+**`content snapshot` usage**: `content snapshot <root> [--out <file>]` exports a `type:id → raw Def` snapshot; combine with `content diff <snapshot> <content>` for regression (golden baseline).
 
-**`content i18n-template` 用法**：`content i18n-template <pack> [--out <file>]` 扫描包内 `labelKey`/`textKey`，读取既有翻译 CSV（保留译文），补全缺失 key 并输出模板；列取已有 locale（缺省 `en,zh_CN`）。Manifest 未声明 `entry.i18n` 时告警（声明后才做强校验）。
+**`content i18n-template` usage**: `content i18n-template <pack> [--out <file>]` scans the pack's `labelKey`/`textKey`, reads the existing translation CSV (preserving translations), fills in missing keys, and outputs a template; columns are taken from existing locales (default `en,zh_CN`). It warns when the Manifest does not declare `entry.i18n` (strong validation only begins after declaration).
 
-**错误码**
+**Error Codes**
 
-| 码 | 含义 |
+| Code | Meaning |
 |---|---|
-| `SCHEMA_INVALID` | 字段/类型/枚举不合法 |
-| `REF_NOT_FOUND` | 悬空引用 |
-| `DEP_MISSING` | 依赖缺失 |
-| `CAP_MISSING` | 能力缺失/版本不满足 |
-| `CYCLE_DETECTED` | 循环依赖 |
-| `NAME_DUP` | id 重复 |
-| `LOC_KEY_MISSING` | 本地化 Key 缺失（字段缺失，或声明 `entry.i18n` 后某 locale 列无翻译） |
-| `ASSET_MISSING` | 资源缺失 |
-| `LICENSE_MISSING` | 资产未登记授权 / `license` 字段缺失（`licenses.json`，见 [content-package.md](content-package.md) §6） |
+| `SCHEMA_INVALID` | Invalid field/type/enum |
+| `REF_NOT_FOUND` | Dangling reference |
+| `DEP_MISSING` | Missing dependency |
+| `CAP_MISSING` | Missing capability/unsatisfied version |
+| `CYCLE_DETECTED` | Circular dependency |
+| `NAME_DUP` | Duplicate id |
+| `LOC_KEY_MISSING` | Missing localization key (field missing, or after declaring `entry.i18n`, a locale column has no translation) |
+| `ASSET_MISSING` | Missing asset |
+| `LICENSE_MISSING` | Asset licensing not registered / `license` field missing (`licenses.json`, see [content-package.md](content-package.md) §6) |
 
-## 3. 能力矩阵 `capabilities.json`
+## 3. Capability Matrix `capabilities.json`
 
-- 路径：`shared/contract/capabilities.json`（引擎构建产出）。
+- Path: `shared/contract/capabilities.json` (produced by the engine build).
 
 ```json
 { "engine": "1.2.0", "schema": "1.2", "schemaSupported": ["1"],
   "capabilities": [ { "name": "world.stream", "version": "1.0", "status": "enabled" } ] }
 ```
 
-- `status`：`enabled` | `deferred`。校验器据此校验 Manifest 的 `capabilities`。
+- `status`: `enabled` | `deferred`. The validator uses it to validate the Manifest's `capabilities`.
 
 ## 4. CI
 
-- **内容流水线**：`validate` + `lint`（每次内容提交）。
-- **引擎流水线**：编译 + 单元 + 导出 `capabilities.json`。
-- **契约测试**：引擎版本矩阵上加载冒烟（见 平台内部文档）。
-- **内容仓 CI 模板**：随 devkit-lite 发布（`ci/content-ci.yml`）；世界组复制到 `.github/workflows/` 即得「pin 校验 + validate + lint」流水线。
-- 兼容判定：`content validate` 按 `schemaSupported` 接受**主版本受支持**的包（非当前版本仅告警）；校验 `requires.engine` 区间与能力版本下限，不满足即拒绝。
+- **Content pipeline**: `validate` + `lint` (on every content commit).
+- **Engine pipeline**: compile + unit + export `capabilities.json`.
+- **Contract tests**: load smoke tests across the engine version matrix (see internal platform doc).
+- **Content repo CI template**: shipped with devkit-lite (`ci/content-ci.yml`); the World team copies it to `.github/workflows/` to get a "pin validation + validate + lint" pipeline.
+- Compatibility determination: `content validate` accepts packs with a **supported major version** according to `schemaSupported` (non-current versions produce a warning only); it validates the `requires.engine` range and capability version minimums, and refuses if unsatisfied.
 
-## 5. 发布制品与版本矩阵 `release.json`
+## 5. Release Artifacts and Version Matrix `release.json`
 
-引擎发布时产出 `release.json`（与 `content` CLI、`devkit-lite` 同批），供内容/服务端消费方 **pin 版本并校验兼容**。生成：`make release`（内部调 `content release`）。
+At release time the engine produces `release.json` (in the same batch as the `content` CLI and `devkit-lite`), for content/server consumers to **pin versions and validate compatibility**. Generation: `make release` (which internally invokes `content release`).
 
 ```json
 {
@@ -108,36 +108,36 @@ content build <content-root> [--godot <bin>] [--project <dir>] [--out <file.pck>
 }
 ```
 
-| 字段 | 说明 |
+| Field | Description |
 |---|---|
-| `engine` | 引擎 SemVer（源：`App/engine/sdk/capabilities.json`） |
-| `godot` | 配套 Godot 版本（源：`deps.json`，可空） |
-| `schema` | 当前 Content Schema 版本 |
-| `schemaSupported` | **兼容窗口**：引擎支持的 Schema 主版本集合（源：capabilities.json） |
-| `capabilities.total/enabled/deferred` | 能力计数 |
-| `capabilities.digest` | 能力集合确定性指纹（`sha256`，按 name 排序的 `name@version:status`） |
-| `artifacts.*` | 同批制品名/路径（相对发布包） |
+| `engine` | Engine SemVer (source: `App/engine/sdk/capabilities.json`) |
+| `godot` | Matching Godot version (source: `deps.json`, may be empty) |
+| `schema` | Current Content Schema version |
+| `schemaSupported` | **Compatibility window**: the set of Schema major versions supported by the engine (source: capabilities.json) |
+| `capabilities.total/enabled/deferred` | Capability counts |
+| `capabilities.digest` | Deterministic fingerprint of the capability set (`sha256`, `name@version:status` sorted by name) |
+| `artifacts.*` | Same-batch artifact names/paths (relative to the release package) |
 
-**消费方规则**
-- 内容/服务端 `deps.json` 记录引擎版本并 pin 上述制品；构建前校验：
-  1. 内容包 `schema` 主版本 ∈ `schemaSupported`，否则**拒绝加载**；
-  2. 契约 `capabilities.json` 的 `digest` 与 `release.json` 一致，防漂移。
-- 校验命令：`content verify-release --release <release.json> --caps <capabilities.json>`（退出码同 §2）。
-- `release.json` **不入库**（`dist/` 为构建产物），随发布制品分发。
-- **镜像与溯源**：`G-Contract` 由 `tools/publish_contract.sh` 从本仓**生成**（只读、白名单），并写 `.g3-mirror.json`（`source_commit`）便于逐提交核对；`--check` 检测漂移；G-Contract CI 有**只读镜像守卫**（PR 禁止直改 `shared/`、`docs/contracts/`、`public/`）。源侧 CI（`publish.yml`）在 `shared/**`/`docs/contracts/**`/`public/**` 变更或 `contract-v*` tag 时自动发布。
-- **对外发布**：契约与制品发布到公共仓 `G-Contract` 的 **Releases**（`contract.zip`、`release.json`、`content`、`engine-devkit-lite-<ver>.zip`），供内容方 pin 下载。
-- **内容组交付包**（`make release` 产出于 `dist/`）：`content`（CLI）、`contract/`（契约：`capabilities.json` + `content-<ver>.json`）、`release.json`（版本矩阵）、`engine-devkit-lite-<ver>.zip`（打包设置 + CI 模板）。
-- 内容组本地布局：`devkit/bin/content` + `devkit/sdk/{capabilities.json,schema/content-<ver>.json}` + `devkit/release.json`；`content validate/lint/... --sdk devkit/sdk`。
+**Consumer rules**
+- Content/server `deps.json` records the engine version and pins the above artifacts; before building, validate:
+  1. Content pack `schema` major version ∈ `schemaSupported`, otherwise **refuse to load**;
+  2. The contract `capabilities.json` `digest` matches `release.json`, to prevent drift.
+- Validation command: `content verify-release --release <release.json> --caps <capabilities.json>` (exit codes as in §2).
+- `release.json` is **not committed** (`dist/` is a build artifact); it is distributed with the release artifacts.
+- **Mirroring and provenance**: `G-Contract` is **generated** from this repo by `tools/publish_contract.sh` (read-only, allowlisted), and writes `.g3-mirror.json` (`source_commit`) for per-commit verification; `--check` detects drift; G-Contract CI has a **read-only mirror guard** (PRs are forbidden from directly modifying `shared/`, `docs/contracts/`, `public/`). Source-side CI (`publish.yml`) automatically publishes when `shared/**`/`docs/contracts/**`/`public/**` change or on a `contract-v*` tag.
+- **External publishing**: the contract and artifacts are published to the **Releases** of the public repo `G-Contract` (`contract.zip`, `release.json`, `content`, `engine-devkit-lite-<ver>.zip`), for content parties to pin and download.
+- **Content team delivery package** (produced by `make release` in `dist/`): `content` (CLI), `contract/` (contract: `capabilities.json` + `content-<ver>.json`), `release.json` (version matrix), `engine-devkit-lite-<ver>.zip` (package settings + CI template).
+- Content team local layout: `devkit/bin/content` + `devkit/sdk/{capabilities.json,schema/content-<ver>.json}` + `devkit/release.json`; `content validate/lint/... --sdk devkit/sdk`.
 
-## 6. 代码生成
+## 6. Code Generation
 
-> 目的：由**唯一源**生成**类型化产物**，编译期暴露字段/枚举错误，并统一类型/枚举清单。
+> Purpose: generate **typed artifacts** from the **single source of truth**, surface field/enum errors at compile time, and unify the type/enum list.
 
-- **唯一源**：`App/engine/sdk/schema/content-<ver>.json`（+ `capabilities.json`）。
-- **命令**：`content gen [--sdk <dir>] [--out <dir>] [--check]`
-  - 产物（确定性、排序稳定）落 `App/engine/sdk/generated/`：
-    `types.json`（中性：engine / schema / defTypes / fields / enums）
-    `gdscript/g3_defs.gd`、`go/g3_defs.gen.go`、`lua/g3_defs_gen.lua`
-  - 枚举来源：Schema `properties.<field>.enum`（顶层字段）。
-- **漂移门**：`content gen --check`（生成物 ≠ 源即失败）→ `make gen-check` + `arch_check` **R8**。
-- **边界**：内容组只**读**生成物；是否采用、何时采用由内容组自定（平台不改内容层）。
+- **Single source of truth**: `App/engine/sdk/schema/content-<ver>.json` (+ `capabilities.json`).
+- **Command**: `content gen [--sdk <dir>] [--out <dir>] [--check]`
+  - Artifacts (deterministic, stably sorted) are placed in `App/engine/sdk/generated/`:
+    `types.json` (neutral: engine / schema / defTypes / fields / enums)
+    `gdscript/g3_defs.gd`, `go/g3_defs.gen.go`, `lua/g3_defs_gen.lua`
+  - Enum source: Schema `properties.<field>.enum` (top-level fields).
+- **Drift gate**: `content gen --check` (fails if generated artifacts ≠ source) → `make gen-check` + `arch_check` **R8**.
+- **Boundary**: the content team only **reads** the generated artifacts; whether and when to adopt them is decided by the content team (the platform does not change the content layer).

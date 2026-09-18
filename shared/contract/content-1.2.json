@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://g3.dev/schema/content-1.2.json",
   "title": "G3 Content Schema 1.0",
-  "description": "内容 Def 与 Manifest 的结构契约。语义（必填/引用/唯一性）由 content 校验器判定，见 docs/contracts/content-tooling.md。",
+  "description": "Structural contract for Content Defs and Manifest. Semantics (required/references/uniqueness) are enforced by the content validator; see docs/contracts/content-tooling.md.",
   "$defs": {
     "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
     "ref": { "type": "string", "minLength": 1 },

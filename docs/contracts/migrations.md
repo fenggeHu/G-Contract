@@ -1,42 +1,42 @@
-# 契约：数据迁移（Migrations）
+# Contract: Data Migrations (Migrations)
 
-- 状态：生效中
-- 更新日期：2026-09-17
+- Status: Active
+- Updated: 2026-09-17
 
-> 适用**平台自有数据**：服务端业务表（Postgres，`G_Server`）与客户端存档 SQLite 多表（见 [save-schema.md](save-schema.md) §7）。
-> **不接管 Nakama 自身 schema**（由上游 `nakama migrate up` 负责）。
-> 归属：平台实现；本契约供消费方按目录/台账约定组织迁移文件。
+> Applies to **platform-owned data**: server business tables (Postgres, `G_Server`) and client save SQLite multi-tables (see [save-schema.md](save-schema.md) §7).
+> **Does not take over Nakama's own schema** (handled upstream by `nakama migrate up`).
+> Ownership: platform implementation; this contract lets consumers organize migration files per the directory/ledger conventions.
 
-## 1. 目录约定
+## 1. Directory conventions
 
 ```text
 migrations/
-├── base/       基线（幂等建表，可 squash）
-├── released/   已发布增量（按文件名排序执行）
-├── custom/     本地 / 自定义
-├── pending/    待审（未合入前不得进入 released）
-└── archive/    已 squash 的增量归档（不再执行）
+├── base/       baseline (idempotent table creation, squashable)
+├── released/   published increments (executed in filename order)
+├── custom/     local / custom
+├── pending/    pending review (must not enter released before merging)
+└── archive/    archive of squashed increments (no longer executed)
 ```
 
-## 2. 台账
+## 2. Ledger
 
-默认 JSON 文件 `<dir>/.ledger.json`（`name → { sha256, state, applied_at, ms }`）；字段语义：
+The default JSON file is `<dir>/.ledger.json` (`name → { sha256, state, applied_at, ms }`); field semantics:
 
-| 字段 | 说明 |
+| Field | Description |
 |---|---|
-| `name` | 迁移文件名（键；唯一） |
-| `sha256` | 文件哈希（**改名不改哈希** → 识别为重命名） |
+| `name` | Migration file name (key; unique) |
+| `sha256` | File hash (**renaming does not change the hash** → recognized as a rename) |
 | `state` | `base` / `released` / `custom` / `pending` |
-| `applied_at` | 应用时间 |
-| `ms` | 耗时 |
+| `applied_at` | Applied time |
+| `ms` | Elapsed time |
 
-## 3. 执行语义
+## 3. Execution semantics
 
-- 按**文件名排序**执行；已应用且哈希一致 → 跳过。
-- **同名哈希变化** → 按需重放（`--rehash`）；**同哈希改名** → 记为新名（不重复执行）。
-- **幂等**：重复执行 0 变更；中断后可续跑。
-- `pending` 默认**不自动应用**（需 `--pending` 显式）。
-- 记录采用 `UPSERT`（REPLACE 语义）。
+- Execute in **filename order**; if already applied with a matching hash → skip.
+- **Same name, changed hash** → replay as needed (`--rehash`); **same hash, renamed** → recorded under the new name (not executed again).
+- **Idempotent**: repeated execution yields 0 changes; can resume after interruption.
+- `pending` is by default **not applied automatically** (requires explicit `--pending`).
+- Records use `UPSERT` (REPLACE semantics).
 
 ## 4. CLI
 
@@ -44,12 +44,12 @@ migrations/
 content migrate [--dir <migrations>] [--ledger <file>] [--pending] [--rehash] [--dry-run] [--apply] [--exec <tpl>] [--json]
 ```
 
-- **默认只规划**（不写台账）；`--apply` 实际执行并落台账。
-- 执行器模板 `--exec`（默认 `psql -v ON_ERROR_STOP=1 -f {file}`）。
-- **基线 squash**：`--squash <name>` 把 `released/*.sql` 合并为 `base/<name>.sql`、原文件移入 `archive/`，并把台账中原 released 条目替换为 base 条目（既有库**幂等，不重复执行**）；仅 `--apply` 生效。
-- 退出码沿用 `content` CLI（见 [content-tooling.md](content-tooling.md) §2）。
-- `--json`：`{ ok, applied[], skipped[], renamed[], errors[] }`。
+- **By default it only plans** (does not write the ledger); `--apply` actually executes and writes the ledger.
+- Executor template `--exec` (default `psql -v ON_ERROR_STOP=1 -f {file}`).
+- **Baseline squash**: `--squash <name>` merges `released/*.sql` into `base/<name>.sql`, moves the original files into `archive/`, and replaces the original released entries in the ledger with base entries (existing databases are **idempotent and not re-executed**); only takes effect with `--apply`.
+- Exit codes follow the `content` CLI (see [content-tooling.md](content-tooling.md) §2).
+- `--json`: `{ ok, applied[], skipped[], renamed[], errors[] }`.
 
-## 5. 与存档的关系
+## 5. Relationship with saves
 
-- 存档版本迁移链（[save-schema.md](save-schema.md) §6）与 SQL 迁移遵循同一原则：**单向往上、幂等**。
+- The save version migration chain ([save-schema.md](save-schema.md) §6) and SQL migrations follow the same principle: **one-way upward, idempotent**.
