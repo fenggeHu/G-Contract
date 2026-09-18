@@ -125,7 +125,7 @@ content build <content-root> [--godot <bin>] [--project <dir>] [--out <file.pck>
 - 校验命令：`content verify-release --release <release.json> --caps <capabilities.json>`（退出码同 §2）。
 - `release.json` **不入库**（`dist/` 为构建产物），随发布制品分发。
 - **镜像与溯源**：`G-Contract` 由 `tools/publish_contract.sh` 从本仓**生成**（只读、白名单），并写 `.g3-mirror.json`（`source_commit`）便于逐提交核对；`--check` 检测漂移；G-Contract CI 有**只读镜像守卫**（PR 禁止直改 `shared/`、`docs/contracts/`、`public/`）。源侧 CI（`publish.yml`）在 `shared/**`/`docs/contracts/**`/`public/**` 变更或 `contract-v*` tag 时自动发布。
-- **对外发布**：契约与制品发布到公共仓 `G-Contract` 的 **Releases**（`contract-<schema>.zip`、`release.json`、`content`、`engine-devkit-lite-<ver>.zip`），供内容方 pin 下载。
+- **对外发布**：契约与制品发布到公共仓 `G-Contract` 的 **Releases**（`contract.zip`、`release.json`、`content`、`engine-devkit-lite-<ver>.zip`），供内容方 pin 下载。
 - **内容组交付包**（`make release` 产出于 `dist/`）：`content`（CLI）、`contract/`（契约：`capabilities.json` + `content-<ver>.json`）、`release.json`（版本矩阵）、`engine-devkit-lite-<ver>.zip`（打包设置 + CI 模板）。
 - 内容组本地布局：`devkit/bin/content` + `devkit/sdk/{capabilities.json,schema/content-<ver>.json}` + `devkit/release.json`；`content validate/lint/... --sdk devkit/sdk`。
 
