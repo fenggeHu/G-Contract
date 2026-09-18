@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "components": [
+    "transform", "movement", "appearance", "presence", "social", "replicable",
+    "combat"
+  ],
+  "entityFields": ["id", "x", "y", "hp", "max_hp", "dead"],
+  "pvpFields": ["team", "kills", "deaths", "respawn_at"],
+  "defRef": { "pack": "string", "id": "string" }
+}

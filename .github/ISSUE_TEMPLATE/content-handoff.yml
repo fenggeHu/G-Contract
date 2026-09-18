@@ -1,0 +1,19 @@
+name: 内容对接（Content Handoff）
+description: 平台与内容方的对接请求/待确认项
+title: "[handoff] "
+labels: ["handoff"]
+body:
+  - type: textarea
+    id: need
+    attributes: { label: 需求/待确认描述 }
+    validations: { required: true }
+  - type: textarea
+    id: action
+    attributes: { label: 需要对方做什么, description: 仅作请求；范围/排期由对应团队自决 }
+    validations: { required: true }
+  - type: input
+    id: interface
+    attributes: { label: 接口/契约产物 }
+  - type: input
+    id: deadline
+    attributes: { label: 期望时间 / 里程碑 }

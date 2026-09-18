@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "proto": 1,
+  "transport": "nakama-json",
+  "messages": [
+    { "t": "input", "dir": "c2s", "opcode": 1,
+      "fields": [ { "name": "dx", "type": "float" }, { "name": "dy", "type": "float" } ] },
+    { "t": "attack", "dir": "c2s", "opcode": 1, "fields": [] },
+    { "t": "cast", "dir": "c2s", "opcode": 1,
+      "fields": [ { "name": "ability", "type": "string" }, { "name": "target", "type": "string" } ] },
+    { "t": "welcome", "dir": "s2c", "opcode": 1,
+      "fields": [ { "name": "id", "type": "string" }, { "name": "mode", "type": "string" },
+                  { "name": "tick", "type": "int" }, { "name": "proto", "type": "int" },
+                  { "name": "arena", "type": "object" } ] },
+    { "t": "snapshot", "dir": "s2c", "opcode": 1,
+      "fields": [ { "name": "proto", "type": "int" }, { "name": "mode", "type": "string" },
+                  { "name": "tick", "type": "int" }, { "name": "players", "type": "object" },
+                  { "name": "enemy", "type": "object" } ] }
+  ],
+  "rpc": [
+    { "name": "create_match", "in": ["mode", "max_players", "respawn_seconds", "score_target", "time_limit", "arena", "combat"] }
+  ]
+}

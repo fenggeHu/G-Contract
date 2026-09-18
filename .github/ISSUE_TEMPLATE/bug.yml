@@ -1,0 +1,16 @@
+name: 缺陷 / 契约歧义（Bug）
+description: 契约文本、Schema、示例、协议/模型产物的问题
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: 现象与期望 }
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes: { label: 证据, description: 契约片段 / 命令输出 / 链接 }
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: 契约版本 / commit }
