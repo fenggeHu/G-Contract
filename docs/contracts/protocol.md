@@ -74,6 +74,7 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 
 | RPC | Input (JSON) | Output (JSON) | Description |
 |---|---|---|---|
+| `telemetry_report` | `{}` | `{ok,partial,users,events,steps}` | 遥测聚合（`loop_progress` 步骤计数；跨用户尽力，失败回退当前用户） |
 | `telemetry_sink` | `{events:[…]}` | `{ok,stored}` | Telemetry ingestion (requires user consent); stored at `g3/telemetry_<user>`, rate-limited |
 | `create_match` | `{mode:"pve"\|"pvp", ...}` | `{match_id, mode}` | Create a generic match; default `mode="pve"` |
 

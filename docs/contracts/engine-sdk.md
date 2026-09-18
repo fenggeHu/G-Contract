@@ -137,7 +137,7 @@ Spatial.query_circle(center, radius, exclude_id?) ; query_rect(rect, exclude_id?
 # Telemetry (telemetry.event)
 Telemetry.event(name, props?) ; progress(step, props?) ; lines() ; clear() ; flush() ; export_events(limit?)
 # Telemetry upload (PS-04; requires Privacy.consent() first)
-NetClient.upload_telemetry(limit?)
+NetClient.upload_telemetry(limit?) ; telemetry_report() -> Dictionary
 # Deterministic randomness (world.seed)
 Rng.root_seed() ; seed_for(key) ; rng(key) ; randf(key) ; randi(key, from, to)
 # Quality tiers (quality.tier)
