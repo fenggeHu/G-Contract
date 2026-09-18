@@ -74,6 +74,7 @@ shared/
 
 | RPC | 入参（JSON） | 出参（JSON） | 说明 |
 |---|---|---|---|
+| `telemetry_sink` | `{events:[…]}` | `{ok,stored}` | 遥测回流（须用户同意）；落 `g3/telemetry_<user>`，限量 |
 | `create_match` | `{mode:"pve"\|"pvp", ...}` | `{match_id, mode}` | 创建通用对局；缺省 `mode="pve"` |
 
 - `pvp` 可选参数：`max_players`（默认 4）· `respawn_seconds`（默认 3）· `score_target`（先达者胜，0=不限）· `time_limit`（tick 上限，0=不限）· `arena{w,h}`（坐标边界）。

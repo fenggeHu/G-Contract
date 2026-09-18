@@ -133,7 +133,9 @@ Conditions.eval(spec, ctx?)
 Spatial.configure(cell) ; insert(id, pos) ; move(id, pos) ; remove(id) ; has(id) ; position(id) ; count() ; clear()
 Spatial.query_circle(center, radius, exclude_id?) ; query_rect(rect, exclude_id?) ; nearest(center, radius?, exclude_id?)
 # 遥测（telemetry.event）
-Telemetry.event(name, props?) ; lines() ; clear() ; flush()
+Telemetry.event(name, props?) ; lines() ; clear() ; flush() ; export_events(limit?)
+# 遥测回流（PS-04；须先 Privacy.consent()）
+NetClient.upload_telemetry(limit?)
 # 确定性随机（world.seed）
 Rng.root_seed() ; seed_for(key) ; rng(key) ; randf(key) ; randi(key, from, to)
 # 画质档位（quality.tier）
