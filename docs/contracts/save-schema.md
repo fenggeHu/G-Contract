@@ -1,7 +1,7 @@
 # Contract: Data and Save Schema
 
 - Status: Active
-- Updated: 2026-09-17
+- Updated: 2026-09-20
 
 > Covers two modes: **offline (local authority)** and **logged-in (cloud save)**. See internal platform doc for details.
 
@@ -56,12 +56,12 @@
 
 - **Startup**: `SaveService.restore_on_boot()` reads the local save and restores it.
 - **Level up / quest turn-in**: `SaveService.autosave()` writes locally; when online, also `save_cloud()`.
-- **Login**: after `NetClient` connects, if a local save exists it is uploaded to the cloud (`[Save] pushed local -> cloud`); the `net_connected` event triggers `flush_outbox()` to replay pending upload items in order.
+- **Login / reconnect**: the `net_connected` event triggers `flush_outbox()`; cloud uploads go through RPC `save_write` with the current `revision` (CAS). On a revision conflict the server snapshot wins (see §9), so a stale local save cannot silently overwrite cloud/administrative changes.
 
 ## 5. Versions and conflicts
 
 - `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (currently only `1`).
-- Conflict granularity: **whole-save LWW** (pre-research, no field-level merge).
+- Conflict granularity: **whole-save**, resolved by **server-authoritative CAS** (`save_write` + `revision`, §9): stale writers are rejected and adopt the server snapshot. No field-level merge.
 
 ## 6. Integrity
 
@@ -79,3 +79,22 @@
 - Local **SQLite** multi-tables (`settings` / `profile` / `save_slot` / `world_state` / `cache`).
 - Field-level conflict merge (currently whole-save LWW).
 - Account data encryption / export / deletion (privacy compliance).
+
+## 8. Management writes (control plane)
+
+> Applies to the operator panel (`G_Admin`). See [admin-panel.md](admin-panel.md), ADR-0004.
+
+- Management writes to `g3/progress` MUST go through the **server-authoritative path** (BFF → Nakama), never a raw client upload.
+- Concurrency: **optimistic** using the Nakama storage object `version` as a compare-and-swap token (`StorageWriteRetry`). A write with a stale version is rejected (`ErrStorageRejectedVersion`) and retried/refused.
+- Online targets follow `onlinePolicy` (`live` push / `block` / `kick_then_write` / `at_rest`); see [admin-panel.md](admin-panel.md) §5.
+- Because the client-authored save is whole-save LWW, a management edit can be overwritten by a later client save; the authoritative path (or a pushed state update) is required for durable edits.
+- All management writes are audited (`admin` schema).
+
+## 9. Server-authoritative cloud write
+
+> Supersedes direct client writes to `g3/progress` (see [protocol.md](protocol.md) §8 RPCs).
+
+- Cloud writes MUST go through RPC **`save_write`** (`{snapshot, expected_revision}`); the storage object is written with **`permission_write=0`** so clients cannot write it directly.
+- **`save_read`** returns `{exists, revision, snapshot}`; `revision` is the Nakama storage object version and acts as the CAS token.
+- On revision mismatch the server rejects the write and returns the authoritative snapshot (`err="conflict"`); the client **adopts the server snapshot (server wins)**. This makes administrative corrections durable against stale client writes.
+- Local save (`user://save.json` + outbox) is a cache/offline buffer; the cloud remains authoritative when online.

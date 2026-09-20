@@ -1,7 +1,7 @@
 # Contract: Content Schema (field-level)
 
 - Status: Active
-- Updated: 2026-09-17
+- Updated: 2026-09-20
 
 > The **authority on fields and semantics** for content data. The machine-readable Schema is exported at build time as `schema/content-<ver>.json` and loaded by the validator.
 
@@ -33,6 +33,10 @@
 ```
 
 - Supports `set` / `remove` / `append`, paths are dot-separated; applied before building the DB.
+
+### 0.2b Relations registry (reference integrity)
+
+Def references are validated against `shared/model/relations-<ver>.json`: each entry declares `{ type, field, target, cardinality, list, crossPack }`. The registry is authored once in `G_Engine/App/engine/sdk/model/` and emitted by `content sync`; `content validate` reports `REF_NOT_FOUND` from it, and Content Studio uses it for graph/navigation. See [content-authoring.md](content-authoring.md) §3.
 
 ### 0.3 Multi-Def file packaging
 

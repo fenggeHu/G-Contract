@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "description": "Def field -> target Def relations (single source). Synced to G_Shared/shared/model by `content sync`; consumed by the validator and Content Studio. See G_Shared/docs/contracts/content-authoring.md.",
+  "relations": [
+    { "type": "biome", "field": "lighting", "target": "lighting_profile", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "scene", "field": "lighting", "target": "lighting_profile", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "poi", "field": "scene", "target": "scene", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "character", "field": "camera", "target": "camera", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "character", "field": "equipment", "target": "equipment", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "item", "field": "grantsAbility", "target": "ability", "cardinality": "0..n", "list": true, "crossPack": true }
+  ]
+}

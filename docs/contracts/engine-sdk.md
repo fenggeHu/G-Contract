@@ -118,7 +118,7 @@ SaveService.save_local/load_local ; save_cloud/load_cloud ; autosave
 # Network (net.client)
 NetClient.connect_to() ; join() ; send_input(dx, dy) ; attack()
 NetClient.submit_score/top_scores ; add_friend_by_username/list_friends ; create_party
-NetClient.cloud_save_write/cloud_save_read
+NetClient.cloud_save_write/cloud_save_read  # 经 RPC save_write/save_read；CAS + server wins（save-schema.md §9）
 # Audio (audio.play/music/mixer)
 AudioService.play(event_id, params?) ; play_music(event_id) ; stop_music()
 AudioService.set_bus_volume(bus, linear) ; bus_volume(bus)

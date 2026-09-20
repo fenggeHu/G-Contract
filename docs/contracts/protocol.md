@@ -1,7 +1,7 @@
 # Contract: Protocol and Shared Models
 
 - Status: Active
-- Updated: 2026-09-17
+- Updated: 2026-09-20
 
 > `shared/` is the **single shared source for Client and Server**; the protocol and shared models exist **only here**, read-only for both ends.
 
@@ -77,6 +77,8 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 | `telemetry_report` | `{}` | `{ok,partial,users,events,steps}` | 遥测聚合（`loop_progress` 步骤计数；跨用户尽力，失败回退当前用户） |
 | `telemetry_sink` | `{events:[…]}` | `{ok,stored}` | Telemetry ingestion (requires user consent); stored at `g3/telemetry_<user>`, rate-limited |
 | `create_match` | `{mode:"pve"\|"pvp", ...}` | `{match_id, mode}` | Create a generic match; default `mode="pve"` |
+| `save_read` | `{}` | `{ok, exists, revision, snapshot}` | Read the caller's cloud save (server-authoritative; `revision` is the CAS token) |
+| `save_write` | `{snapshot, expected_revision}` | `{ok, revision, snapshot}` or `{ok:false, err:"conflict", revision, snapshot}` | Server-authoritative cloud write (CAS); on mismatch returns the server snapshot (**server wins**). See [save-schema.md](save-schema.md) §9 |
 
 - `pvp` optional parameters: `max_players` (default 4) · `respawn_seconds` (default 3) · `score_target` (first to reach wins, 0 = unlimited) · `time_limit` (tick limit, 0 = unlimited) · `arena{w,h}` (coordinate bounds).
 - `aoi` (optional, **AOI targeted broadcast**): `{ enabled?, cell, radius, hysteresis?, maxRadius? }` (units match `arena` = pixels; `radius` is clamped by `maxRadius`, and the **lower bound = engagement distance** (the maximum ability `range` in the `RANGE`/`combat` projection, preventing "invisible attackers"); providing it enables it, `enabled:false` explicitly disables it). **Disabled by default**; recommended to enable at the world layer.
