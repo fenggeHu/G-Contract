@@ -15,9 +15,21 @@
     { "t": "snapshot", "dir": "s2c", "opcode": 1,
       "fields": [ { "name": "proto", "type": "int" }, { "name": "mode", "type": "string" },
                   { "name": "tick", "type": "int" }, { "name": "players", "type": "object" },
-                  { "name": "enemy", "type": "object" } ] }
+                  { "name": "enemy", "type": "object" } ] },
+    { "t": "world_welcome", "dir": "s2c", "opcode": 1,
+      "fields": [ { "name": "id", "type": "string" }, { "name": "world_id", "type": "string" },
+                  { "name": "mode", "type": "string" }, { "name": "tick", "type": "int" },
+                  { "name": "tick_rate", "type": "int" }, { "name": "proto", "type": "int" },
+                  { "name": "spawn", "type": "object" }, { "name": "revision", "type": "string" } ] },
+    { "t": "world_snapshot", "dir": "s2c", "opcode": 1,
+      "fields": [ { "name": "proto", "type": "int" }, { "name": "world_id", "type": "string" },
+                  { "name": "tick", "type": "int" }, { "name": "players", "type": "object" },
+                  { "name": "enter", "type": "array" }, { "name": "leave", "type": "array" } ] }
   ],
   "rpc": [
-    { "name": "create_match", "in": ["mode", "max_players", "respawn_seconds", "score_target", "time_limit", "arena", "combat"] }
+    { "name": "create_match", "in": ["mode", "max_players", "respawn_seconds", "score_target", "time_limit", "arena", "combat"] },
+    { "name": "enter_world", "in": ["prefer_poi", "presence_meta"] },
+    { "name": "leave_world", "in": [] },
+    { "name": "appearance_get", "in": ["user_id", "species"] }
   ]
 }

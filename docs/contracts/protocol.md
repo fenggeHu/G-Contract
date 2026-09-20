@@ -79,6 +79,9 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 | `create_match` | `{mode:"pve"\|"pvp", ...}` | `{match_id, mode}` | Create a generic match; default `mode="pve"` |
 | `save_read` | `{}` | `{ok, exists, revision, snapshot}` | Read the caller's cloud save (server-authoritative; `revision` is the CAS token) |
 | `save_write` | `{snapshot, expected_revision}` | `{ok, revision, snapshot}` or `{ok:false, err:"conflict", revision, snapshot}` | Server-authoritative cloud write (CAS); on mismatch returns the server snapshot (**server wins**). See [save-schema.md](save-schema.md) §9 |
+| `enter_world` | `{prefer_poi?, presence_meta?}` | `{ok, world_id, match_id, proto, spawn:{poi_id,x,y,altitude}, revision}` | Enter the **persistent world** room (creates/ensures the singleton world match); the server resolves the authoritative spawn from the cloud save `player.location`, else the content projection `presence_meta` (`default_entry` / `pois`) |
+| `leave_world` | `{}` | `{ok}` | Mark the caller as leaving the world (cross-authority switch / logout) |
+| `appearance_get` | `{user_id, species}` | `{ok, species, params}` or `{ok:false, err:"not_found"}` | Fetch a player's full appearance params for replication (by entity `id` + `species`; bounded cache; see §8 appearance) |
 
 - `pvp` optional parameters: `max_players` (default 4) · `respawn_seconds` (default 3) · `score_target` (first to reach wins, 0 = unlimited) · `time_limit` (tick limit, 0 = unlimited) · `arena{w,h}` (coordinate bounds).
 - `aoi` (optional, **AOI targeted broadcast**): `{ enabled?, cell, radius, hysteresis?, maxRadius? }` (units match `arena` = pixels; `radius` is clamped by `maxRadius`, and the **lower bound = engagement distance** (the maximum ability `range` in the `RANGE`/`combat` projection, preventing "invisible attackers"); providing it enables it, `enabled:false` explicitly disables it). **Disabled by default**; recommended to enable at the world layer.
@@ -105,3 +108,18 @@ Entity fields: `id` · `x` · `y` · `hp` · `max_hp` · `dead`; `pvp` additiona
 **Server authority**: HP/damage/respawn/win-loss are resolved by the server (online-and-instances.md):
 - `pve`: `attack` hits enemies within range.
 - `pvp`: `attack` hits the nearest hostile player within range (same `team` takes no damage); death respawns after `respawn_seconds`.
+
+### World state
+
+The persistent world is a **singleton authoritative match** (label `g3/world`, low tick rate, **no combat simulation**), served by `G_Server/nakama/modules/world.lua`; presence + AOI broadcast reuse `aoi.lua` (AOI **enabled by default** at the world layer).
+
+| Direction | Message | Field | Implementation |
+|---|---|---|---|
+| S→C | `world_welcome` | `id`, `world_id`, `mode="world"`, `tick`, `tick_rate`, `proto`, `spawn{poi_id,x,y,altitude}`, `revision` | ✅ sent per presence on join |
+| S→C | `world_snapshot` | `proto`, `world_id`, `tick`, `players{}`, `enter[]`, `leave[]` | ✅ AOI-filtered presence broadcast |
+
+- Joining uses the same `create/join` mechanics as matches (`enter_world` returns `match_id`; the client joins with `{proto, species, akey}`).
+- **Spawn is server-authoritative**: derived from the persisted `player.location` (cloud save) when present, otherwise the content `world.defaultEntry` / `poi`; the client must adopt `world_welcome.spawn` rather than computing it locally.
+- **Reconnect**: socket `closed` → backoff → re-auth → rejoin the world match (same rule as matches).
+
+**Appearance replication**: each entity in `world_snapshot.players{}` (and in match `snapshot.players{}`) carries `species` + `akey` (`<species>@<hash>`, a client-computed cache key over `player.appearance.params`, [content-schema.md](content-schema.md) §28). Clients cache params by `akey` and, on a cache miss, fetch via `appearance_get` keyed by the entity `id` (user id) + `species`; the server never sends full params per tick. On `save_write` the server normalizes params against the optional `appearance_schema` projection ([save-schema.md](save-schema.md) §10).

@@ -22,7 +22,9 @@
     "stats_id": "stats_player",
     "level": 1, "xp": 0, "hp": 100,
     "inventory": ["item_steel_sword"],
-    "equipped": { "weapon": "", "armor": "", "artifact": "" }
+    "equipped": { "weapon": "", "armor": "", "artifact": "" },
+    "appearance": { "species": "species_human", "params": { "skin": "#c8a07a", "build": 1.05 } },
+    "location": { "world_id": "world_aurelia", "poi_id": "", "x": 0.0, "y": 0.0, "altitude": 0.0 }
   },
   "quests": {
     "active": { "quest_grunt": [0] },
@@ -40,6 +42,8 @@
 | `player.level/xp/hp` | Level / XP / current HP |
 | `player.inventory` | List of item ids |
 | `player.equipped` | Slot → item id; slot ids are declared by content `equipment.slots[]` (§25 content-schema) |
+| `player.appearance` | `{ species, params }`; canonicalized against the `species` Def (§28 content-schema). Absent in old saves → defaults |
+| `player.location` | Last world position `{ world_id, poi_id, x, y, altitude }`; used by `enter_world` for the spawn point. Absent → content `world.defaultEntry` |
 | `quests.active` | Quest id → array of progress per objective |
 | `quests.pending` | Set of quests pending turn-in |
 | `quests.done` | Set of completed quests |
@@ -60,7 +64,7 @@
 
 ## 5. Versions and conflicts
 
-- `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (currently only `1`).
+- `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (`1` → `2`: backfill `player.appearance` / `player.location` defaults; idempotent).
 - Conflict granularity: **whole-save**, resolved by **server-authoritative CAS** (`save_write` + `revision`, §9): stale writers are rejected and adopt the server snapshot. No field-level merge.
 
 ## 6. Integrity
@@ -98,3 +102,11 @@
 - **`save_read`** returns `{exists, revision, snapshot}`; `revision` is the Nakama storage object version and acts as the CAS token.
 - On revision mismatch the server rejects the write and returns the authoritative snapshot (`err="conflict"`); the client **adopts the server snapshot (server wins)**. This makes administrative corrections durable against stale client writes.
 - Local save (`user://save.json` + outbox) is a cache/offline buffer; the cloud remains authoritative when online.
+
+## 10. Appearance normalization (server-authoritative)
+
+> Generic, content-free validation. See [protocol.md](protocol.md) §8 (`appearance_get`, `appearance_schema` projection).
+
+- On `save_write` the server canonicalizes `player.appearance.params` against a **content projection** (`appearance_schema`: `{ species, params:[{id, kind, min, max, step, options}] }`, the same projection pattern as `combat`): values are clamped to `min/max`, quantized by `step`, `enum` must be one of `options`, `color` must be `#rrggbb`; unknown params are dropped.
+- The server stores the **normalized** appearance; the client adopts it on the next read (consistent with the CAS "server wins" rule).
+- Rationale: the server holds **no content values**; validation is anti-dirty-data, not anti-cheat. A pinned server-side projection is a hardening follow-up.

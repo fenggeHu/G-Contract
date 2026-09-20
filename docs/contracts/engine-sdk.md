@@ -1,7 +1,7 @@
 # Contract: Engine SDK
 
 - Status: Active
-- Updated: 2026-09-17
+- Updated: 2026-09-20
 
 > The **sole interface** the engine team provides to the content layer. Changes follow the compatibility policy in architecture overview.
 > **Scope**: pre-research implements only "enabled capabilities"; the rest are marked "deferred". See pre-research scope.
@@ -21,12 +21,14 @@
 | `world.coords` | 1.0 | `WorldStream.world_to_px/px_to_world` | World meters ↔ pixel conversion (PPU) |
 | `scene.switch` | 1.0 | `autoload/scene_manager.gd` | Scene switching + fade in/out |
 | `net.client` | 1.0 | `autoload/net_client.gd` | Nakama client (connect/match/chat/ranking/party/cloud save) |
+| `world.presence` | 1.0 | `autoload/net_client.gd` + `G_Server/nakama/modules/world.lua` | Persistent-world entry/presence: `enter_world` → authoritative spawn, AOI snapshot replication, reconnect |
 | `stats.core` | 1.0 | `autoload/combat.gd` | Stat and equipment modifiers |
 | `effect.apply` | 1.0 | `Combat.damage/apply_damage` | Damage/effect resolution |
 | `effect.aura` | 1.0 | `autoload/combat.gd` | Effect/aura runtime: `statModifiers` (flat/percent), `maxStacks`, `stackMode refresh/stack`, `durationMs` expiry |
 | `camera.control` | 1.0 | `engine/runtime/camera_follow.gd` | Camera follow / rotation / distance (zoom) / collision handling / shake |
 | `input.action` | 1.0 | `CharacterController` + `FlightPlayer` + Godot Input actions | Action-based input (keyboard `ui_*` / `move_*` + touch joystick `touch_dir`) |
 | `movement.character` | 1.0 | `engine/runtime/character_controller.gd` | Character movement (walk/sprint/jump/gravity/ground check/climb/fly/mount), Def-driven |
+| `appearance.apply` | 1.0 | `autoload/appearance.gd` | Parameterized appearance: normalize/validate `species.params` and apply to a presentation node; key = `species@hash` |
 | `physics.query` | 1.0 | `engine/runtime/physics_query.gd` | Collision/area/raycast/ground queries |
 | `region.trigger` | 1.0 | `engine/runtime/region_trigger.gd` | Region enter/exit (Area2D) |
 | `path.find` | 1.0 | `engine/runtime/path_finder.gd` | Height-aware grid A* (`navgrid` bitmap + elevation; steep walls/canyons) |
@@ -91,7 +93,10 @@ CharacterController.intent / sprint / climb / climbable / flying / mounted / alt
 CharacterController.state / on_ground / jumps_left ; state_changed/jumped/landed signals
 CharacterController.jump_velocity(height, gravity) ; gravity_step(vy, gravity, max_fall, dt) ; approach(v, t, d)
 # Generic playable character (engine generic composite node, includes CharacterController + FollowCamera; Def id set by content)
-PlayerCharacter.character_def / camera_def ; set_intent(v) ; body / camera
+PlayerCharacter.character_def / camera_def / species_def ; set_intent(v) ; set_appearance(params) ; body / camera
+# Appearance (appearance.apply; parameterized, content-declared params)
+Appearance.normalize(species_def, params) -> Dictionary ; Appearance.key(species_id, params) -> String
+Appearance.apply(species_def, params) -> Node ; Appearance.params(akey) ; Appearance.remember(akey, species, params)
 # Physics queries (physics.query; read-only, no space returns empty)
 PhysicsQuery.overlap_circle(node, center, radius, mask, exclude) ; raycast(node, from, to, mask, exclude) ; ground_check(body)
 # Pathfinding (path.find; height-aware grid A*, data from navgrid Def)
@@ -117,6 +122,7 @@ SaveService.get_value/set_value ; snapshot/apply
 SaveService.save_local/load_local ; save_cloud/load_cloud ; autosave
 # Network (net.client)
 NetClient.connect_to() ; join() ; send_input(dx, dy) ; attack()
+NetClient.enter_world(prefer_poi?) ; leave_world() ; appearance_get(user_id, species)  # 持久世界房间 + 服务端权威出生点
 NetClient.submit_score/top_scores ; add_friend_by_username/list_friends ; create_party
 NetClient.cloud_save_write/cloud_save_read  # 经 RPC save_write/save_read；CAS + server wins（save-schema.md §9）
 # Audio (audio.play/music/mixer)

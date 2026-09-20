@@ -1,7 +1,7 @@
 # Content Examples (Minimal Working / Common Errors)
 
 - Status: Active
-- Updated: 2026-09-17
+- Updated: 2026-09-20
 
 > For AI / content authors: the **minimal working examples** and **common errors** for each type of Def. Field semantics are governed solely by [content-schema.md](content-schema.md) as the single source of truth; use `content validate` / `content lint` for machine validation.
 > Each Def file takes the form `{"defs": [ … ]}` (see [content-schema.md](content-schema.md) §0.3).
@@ -201,3 +201,16 @@ See [content-package.md](content-package.md) §2.
   "range": 8.0, "cooldownMs": 4000, "effects": ["effect_caps"] }
 ```
 ❌ `grantsAbility` points to a missing `ability` (`REF_NOT_FOUND`); `source` not in `player/weapon/artifact`.
+
+## 25. species (appearance / customization)
+
+```json
+{ "type": "species", "id": "species_human", "labelKey": "SPECIES_HUMAN",
+  "presentation": "characters/human.tscn",
+  "params": [
+    { "id": "skin",  "kind": "color", "default": "#c8a07a", "part": "body" },
+    { "id": "hair",  "kind": "enum",  "options": ["hair_a", "hair_b"], "default": "hair_a", "part": "head" },
+    { "id": "build", "kind": "float", "min": 0.8, "max": 1.2, "step": 0.05, "default": 1.0 }
+  ] }
+```
+❌ `kind` is not one of `color/enum/float/int`; an `enum` lacks `options`; a `float` sets `min > max`; param `id` repeats; `character.species`/`npc.species` is dangling (`REF_NOT_FOUND`).

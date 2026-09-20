@@ -1,7 +1,7 @@
 # Contract: Content Toolchain (Schema / Validator)
 
 - Status: Active
-- Updated: 2026-09-17
+- Updated: 2026-09-20
 
 > The **tooling implementation specification** for the content contract: machine-readable Schema, validator I/O, capability matrix. For field semantics, see [content-schema.md](content-schema.md).
 
@@ -103,7 +103,7 @@ At release time the engine produces `release.json` (in the same batch as the `co
     "devkitLite": "engine-devkit-lite-0.1.0.zip",
     "contract": "shared/contract",
     "capabilities": "App/engine/sdk/capabilities.json",
-    "contentSchema": "App/engine/sdk/schema/content-1.3.json"
+    "contentSchema": "App/engine/sdk/schema/content-1.4.json"
   }
 }
 ```

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://g3.dev/schema/content-1.3.json",
-  "title": "G3 Content Schema 1.0",
+  "$id": "https://g3.dev/schema/content-1.4.json",
+  "title": "G3 Content Schema 1.4",
   "description": "Structural contract for Content Defs and Manifest. Semantics (required/references/uniqueness) are enforced by the content validator; see docs/contracts/content-tooling.md.",
   "$defs": {
     "id": {
@@ -157,6 +157,9 @@
           "type": "array"
         },
         "defaultLighting": {
+          "$ref": "#/$defs/ref"
+        },
+        "defaultEntry": {
           "$ref": "#/$defs/ref"
         }
       }
@@ -1089,6 +1092,9 @@
         },
         "equipment": {
           "$ref": "#/$defs/ref"
+        },
+        "species": {
+          "$ref": "#/$defs/ref"
         }
       }
     },
@@ -1241,6 +1247,77 @@
         }
       }
     },
+    "species": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "species"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "labelKey": {
+          "type": "string"
+        },
+        "presentation": {
+          "type": "string"
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "kind": {
+                "enum": [
+                  "color",
+                  "enum",
+                  "float",
+                  "int"
+                ]
+              },
+              "labelKey": {
+                "type": "string"
+              },
+              "default": {},
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "step": {
+                "type": "number"
+              },
+              "options": {
+                "type": "array"
+              },
+              "part": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "def": {
       "oneOf": [
         {
@@ -1296,6 +1373,9 @@
         },
         {
           "$ref": "#/$defs/character"
+        },
+        {
+          "$ref": "#/$defs/species"
         },
         {
           "$ref": "#/$defs/equipment"

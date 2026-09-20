@@ -6,5 +6,7 @@
   ],
   "entityFields": ["id", "x", "y", "hp", "max_hp", "dead"],
   "pvpFields": ["team", "kills", "deaths", "respawn_at"],
+  "appearanceFields": ["species", "akey"],
+  "locationFields": ["world_id", "poi_id", "x", "y", "altitude"],
   "defRef": { "pack": "string", "id": "string" }
 }

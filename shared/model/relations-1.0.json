@@ -7,6 +7,8 @@
     { "type": "poi", "field": "scene", "target": "scene", "cardinality": "0..1", "list": false, "crossPack": true },
     { "type": "character", "field": "camera", "target": "camera", "cardinality": "0..1", "list": false, "crossPack": true },
     { "type": "character", "field": "equipment", "target": "equipment", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "character", "field": "species", "target": "species", "cardinality": "0..1", "list": false, "crossPack": true },
+    { "type": "npc", "field": "species", "target": "species", "cardinality": "0..1", "list": false, "crossPack": true },
     { "type": "item", "field": "grantsAbility", "target": "ability", "cardinality": "0..n", "list": true, "crossPack": true }
   ]
 }

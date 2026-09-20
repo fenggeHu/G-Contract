@@ -286,6 +286,7 @@ For the machine-readable Schema, validator CLI, and capability matrix see [conte
 | `mount` | object | No | `{speed, accel, turnSpeed}` |
 | `camera` | reference | No | Camera profile (§23) |
 | `equipment` | reference | No | Equipment slot set (§25) |
+| `species` | reference | No | Appearance/species and customization parameters (§28) |
 
 ## 23. `camera` (camera profile)
 
@@ -347,3 +348,29 @@ For the machine-readable Schema, validator CLI, and capability matrix see [conte
 | `{ "stat": name, "op": ">=/<=/>/</==/!=", "value": n }` | Derived attribute (default `>=`) |
 | `{ "level": n, "op": ">=…" }` | Level |
 | `{ "kv": key, "value": any }` | Save-game KV equality |
+
+## 28. `species` (appearance / parameterized customization)
+
+> Generic primitive for **player appearance**. Content declares the base presentation and the **customization parameter table**; the player picks values, the platform validates/normalizes them and replicates a compact key. The platform defines only the **parameter format** (no art/values). Referenced by `character.species` and `npc.species` (`npc` uses the defaults).
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `presentation` | string | No | Presentation scene (`.tscn`) path; the engine instantiates it and calls `apply_params(params)` on its root |
+| `params[]` | param | No | Customization parameters; order is stable and defines the canonical/compact encoding |
+
+**`params[]` entry**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `id` | id | Yes | Parameter id (unique within the species; key in save `player.appearance.params`) |
+| `kind` | enum | Yes | `color` (`#rrggbb` string) / `enum` (one of `options`) / `float` / `int` |
+| `default` | any | No | Default value when absent (also used by save migration) |
+| `min` / `max` | number | No | Range for `float` / `int` (server clamps on save) |
+| `step` | number | No | Quantization step for `float` / `int` |
+| `options` | array | No | Allowed values for `enum` |
+| `part` | string | No | Presentation hint (e.g. a slot/attachment name); opaque to the platform |
+| `labelKey` | Key | No | UI label |
+
+- **Canonical form**: `Player.appearance = { "species": <id>, "params": { <paramId>: <value> } }`; values are normalized to the param's kind/range before persistence (`Appearance.normalize`).
+- **Compact replication**: `akey = "<species>@<hash>"` (hash of the canonical params). Snapshots carry `akey` only; the full params are fetched on demand via RPC `appearance_get` ([protocol.md](protocol.md) §8).
+- **Server authority**: on cloud write the platform validates/clamps params against the content-projected schema ([save-schema.md](save-schema.md) §10); the save is the source of truth for a player's appearance.
