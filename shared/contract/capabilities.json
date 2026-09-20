@@ -19,6 +19,7 @@
     { "name": "world.presence", "version": "1.0", "status": "enabled" },
     { "name": "physics.query", "version": "1.0", "status": "enabled" },
     { "name": "region.trigger", "version": "1.0", "status": "enabled" },
+    { "name": "terrain.tiled", "version": "1.0", "status": "enabled" },
     { "name": "path.find", "version": "1.0", "status": "enabled" },
     { "name": "save.slot", "version": "1.0", "status": "enabled" },
     { "name": "script.gdscript", "version": "1.0", "status": "enabled" },

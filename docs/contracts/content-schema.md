@@ -79,7 +79,7 @@ See [content-package.md](content-package.md).
 
 > Note: `terrain` is not a Def that can be declared independently (there is no such type in the machine Schema); `scene.terrain` is a Tiled file path string.
 
-**Reuse a mature format**: scene terrain is authoritatively stored as a **Tiled map (`.tmj`, JSON)**, imported by the engine via Godot TileSet. **Do not build a custom format.**
+**Reuse a mature format**: scene terrain is authoritatively stored as a **Tiled map (`.tmj`, JSON)**, loaded at runtime by the engine via the `terrain.tiled` capability (Godot `TileSet` + `TileMapLayer`). **Do not build a custom format.**
 
 | Tiled layer | Purpose |
 |---|---|

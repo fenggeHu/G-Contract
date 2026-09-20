@@ -31,6 +31,7 @@
 | `appearance.apply` | 1.0 | `autoload/appearance.gd` | Parameterized appearance: normalize/validate `species.params` and apply to a presentation node; key = `species@hash` |
 | `physics.query` | 1.0 | `engine/runtime/physics_query.gd` | Collision/area/raycast/ground queries |
 | `region.trigger` | 1.0 | `engine/runtime/region_trigger.gd` | Region enter/exit (Area2D) |
+| `terrain.tiled` | 1.0 | `engine/runtime/terrain_map.gd` | Tiled `.tmj` terrain: `ground`/`detail` via Godot `TileSet`+`TileMapLayer`; `height`/`pathing` queries; `pathing` blockers (static collision) |
 | `path.find` | 1.0 | `engine/runtime/path_finder.gd` | Height-aware grid A* (`navgrid` bitmap + elevation; steep walls/canyons) |
 | `save.slot` | 1.0 | `autoload/save_service.gd` | Progress read/write (local + Nakama cloud save) |
 | `script.gdscript` | 1.0 | content `*.gd` | GDScript content scripts |
@@ -103,6 +104,9 @@ PhysicsQuery.overlap_circle(node, center, radius, mask, exclude) ; raycast(node,
 PathFinder.find_path(navgrid_def, from_cell, to_cell, opts) ; search(walk, alt, cols, rows, from, to, opts) ; cell_to_m(cell, cellM)
 # Region (region.trigger)
 RegionTrigger.region_id / body_mask ; entered/exited signals   # Also emits EventBus.region_enter/region_exit
+# Terrain (terrain.tiled; Tiled .tmj, read-only)
+TerrainMap.terrain_path / load_tiled(path) ; size_cells() ; has_pathing()
+TerrainMap.walkable_cell(cx, cy) / walkable_px(pos) ; height_cell(cx, cy)   # pathing=0 阻挡；越界阻挡
 # Camera (camera.control)
 FollowCamera.target / smooth / rotate_with_target / free_rotation / set_zoom_level(z) / zoom_by(d) / rotate_by(dyaw) / shake(strength)
 # Touch input (ui/touch_controls.tscn)
