@@ -24,7 +24,8 @@
     "inventory": ["item_steel_sword"],
     "equipped": { "weapon": "", "armor": "", "artifact": "" },
     "appearance": { "species": "species_human", "params": { "skin": "#c8a07a", "build": 1.05 } },
-    "location": { "world_id": "world_aurelia", "poi_id": "", "x": 0.0, "y": 0.0, "altitude": 0.0 }
+    "location": { "world_id": "world_aurelia", "poi_id": "", "x": 0.0, "y": 0.0, "altitude": 0.0 },
+    "resources": { "mana": 42.0 }
   },
   "quests": {
     "active": { "quest_grunt": [0] },
@@ -42,6 +43,7 @@
 | `player.level/xp/hp` | Level / XP / current HP |
 | `player.inventory` | List of item ids |
 | `player.equipped` | Slot → item id; slot ids are declared by content `equipment.slots[]` (§25 content-schema) |
+| `player.resources` | Resource id → current value (from `stats.resources[]`). Repleted over time by `regenPerSec`; spent by `ability.cost.resource`. Absent → initialized to max |
 | `player.appearance` | `{ species, params }`; canonicalized against the `species` Def (§28 content-schema). Absent in old saves → defaults |
 | `player.location` | Last world position `{ world_id, poi_id, x, y, altitude }`; used by `enter_world` for the spawn point. Absent → content `world.defaultEntry` |
 | `quests.active` | Quest id → array of progress per objective |
@@ -64,7 +66,7 @@
 
 ## 5. Versions and conflicts
 
-- `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (`1` → `2`: backfill `player.appearance` / `player.location` defaults; idempotent).
+- `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (`1`→`2`: backfill `player.appearance`/`player.location`; `2`→`3`: backfill `player.resources`; idempotent).
 - Conflict granularity: **whole-save**, resolved by **server-authoritative CAS** (`save_write` + `revision`, §9): stale writers are rejected and adopt the server snapshot. No field-level merge.
 
 ## 6. Integrity

@@ -124,11 +124,12 @@ FollowCamera.target / smooth / rotate_with_target / free_rotation / set_zoom_lev
 # Touch input (ui/touch_controls.tscn)
 TouchControls.move(dir) / land_pressed ; set_land_available(v) ; TouchJoystick.calc(center, point, radius)
 # Combat
-Combat.stats(def_id) ; item_stats(item_id)
+Combat.stats(def_id) ; item_stats(item_id) ; ability_cost(ability_id)   # ability.cost {resource, amount}
 Combat.damage(src, tgt, effect_id) ; apply_damage(rt, dmg, source_id)
 Combat.in_radius(list, origin, radius, exclude_id) ; loot_roll(stats_def) ; xp_reward(stats_def)
 # Player / quests / dialog
 Player.setup(stats_id) ; derived() ; max_hp() ; add_item(id) ; add_xp(n)
+Player.resource(id) / resource_max(id) / can_pay(id, n) / spend(id, n) / regen(dt) / resources_state()
 Player.export_state() / import_state(d)
 Quests.state(id) ; start(id) ; progress(kind, target, n) ; turn_in(id)
 Quests.export_state() / import_state(d)
