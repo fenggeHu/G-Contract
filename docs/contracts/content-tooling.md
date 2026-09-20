@@ -103,7 +103,7 @@ At release time the engine produces `release.json` (in the same batch as the `co
     "devkitLite": "engine-devkit-lite-0.1.0.zip",
     "contract": "shared/contract",
     "capabilities": "App/engine/sdk/capabilities.json",
-    "contentSchema": "App/engine/sdk/schema/content-1.4.json"
+    "contentSchema": "App/engine/sdk/schema/content-1.5.json"
   }
 }
 ```

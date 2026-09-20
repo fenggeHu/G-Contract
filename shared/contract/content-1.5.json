@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://g3.dev/schema/content-1.4.json",
-  "title": "G3 Content Schema 1.4",
+  "$id": "https://g3.dev/schema/content-1.5.json",
+  "title": "G3 Content Schema 1.5",
   "description": "Structural contract for Content Defs and Manifest. Semantics (required/references/uniqueness) are enforced by the content validator; see docs/contracts/content-tooling.md.",
   "$defs": {
     "id": {
@@ -161,6 +161,29 @@
         },
         "defaultEntry": {
           "$ref": "#/$defs/ref"
+        },
+        "procgen": {
+          "type": "object",
+          "properties": {
+            "height": {
+              "type": "object"
+            },
+            "temperature": {
+              "type": "object"
+            },
+            "moisture": {
+              "type": "object"
+            },
+            "hydrology": {
+              "type": "object"
+            },
+            "erosion": {
+              "type": "object"
+            },
+            "plates": {
+              "type": "object"
+            }
+          }
         }
       }
     },
@@ -1318,6 +1341,71 @@
         }
       }
     },
+    "sprite_atlas": {
+      "type": "object",
+      "required": [
+        "type",
+        "image",
+        "regions"
+      ],
+      "properties": {
+        "type": {
+          "const": "sprite_atlas"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "labelKey": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "regions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "x",
+              "y",
+              "w",
+              "h"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "x": {
+                "type": "integer"
+              },
+              "y": {
+                "type": "integer"
+              },
+              "w": {
+                "type": "integer"
+              },
+              "h": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "frames": {
+          "type": "object"
+        }
+      }
+    },
     "def": {
       "oneOf": [
         {
@@ -1376,6 +1464,9 @@
         },
         {
           "$ref": "#/$defs/species"
+        },
+        {
+          "$ref": "#/$defs/sprite_atlas"
         },
         {
           "$ref": "#/$defs/equipment"

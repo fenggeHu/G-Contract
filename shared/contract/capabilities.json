@@ -1,6 +1,6 @@
 {
   "engine": "0.1.0",
-  "schema": "1.4",
+  "schema": "1.5",
   "schemaSupported": ["1"],
   "capabilities": [
     { "name": "world.stream", "version": "1.0", "status": "enabled" },
@@ -20,6 +20,9 @@
     { "name": "physics.query", "version": "1.0", "status": "enabled" },
     { "name": "region.trigger", "version": "1.0", "status": "enabled" },
     { "name": "terrain.tiled", "version": "1.0", "status": "enabled" },
+    { "name": "sprite.atlas", "version": "1.0", "status": "enabled" },
+    { "name": "gm.command", "version": "1.0", "status": "enabled" },
+    { "name": "gm.panel", "version": "1.0", "status": "enabled" },
     { "name": "path.find", "version": "1.0", "status": "enabled" },
     { "name": "save.slot", "version": "1.0", "status": "enabled" },
     { "name": "script.gdscript", "version": "1.0", "status": "enabled" },

@@ -27,9 +27,11 @@ See [content-package.md](content-package.md) §2.
 ```json
 { "type": "world", "id": "world_aurelia", "seed": 1337,
   "sizeM": { "x": 2048, "y": 2048 }, "chunkSizeM": 256, "rasterCellM": 8,
-  "imageDir": "world", "biomeMap": "biome_highland" }
+  "imageDir": "world", "biomeMap": "biome_highland"
+  // optional: "procgen": { "height": {"scale":0.02,"octaves":6}, "hydrology": {"rivers":true,"threshold":0.05} }
+}
 ```
-❌ Missing `biomeMap`; `imageDir` does not match the actual bake directory.
+❌ Missing `biomeMap`; `imageDir` does not match the actual bake directory; `procgen` sub-fields use wrong types (values are numbers/bools).
 
 ## 3. biome
 ```json
@@ -214,3 +216,16 @@ See [content-package.md](content-package.md) §2.
   ] }
 ```
 ❌ `kind` is not one of `color/enum/float/int`; an `enum` lacks `options`; a `float` sets `min > max`; param `id` repeats; `character.species`/`npc.species` is dangling (`REF_NOT_FOUND`).
+
+## 26. sprite_atlas (atlas + region table)
+
+```json
+{ "type": "sprite_atlas", "id": "atlas_hero", "labelKey": "ATLAS_HERO",
+  "image": "sprites/hero.png",
+  "regions": [
+    { "name": "idle_0", "x": 0,  "y": 0, "w": 32, "h": 32 },
+    { "name": "idle_1", "x": 32, "y": 0, "w": 32, "h": 32 }
+  ],
+  "frames": { "idle": ["idle_0", "idle_1"] } }
+```
+❌ `regions` empty or a region missing `x/y/w/h`; `frames` references a region name not in `regions`; `image` does not exist (`ASSET_MISSING`).

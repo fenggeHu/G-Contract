@@ -32,6 +32,9 @@
 | `physics.query` | 1.0 | `engine/runtime/physics_query.gd` | Collision/area/raycast/ground queries |
 | `region.trigger` | 1.0 | `engine/runtime/region_trigger.gd` | Region enter/exit (Area2D) |
 | `terrain.tiled` | 1.0 | `engine/runtime/terrain_map.gd` | Tiled `.tmj` terrain: `ground`/`detail` via Godot `TileSet`+`TileMapLayer`; `height`/`pathing` queries; `pathing` blockers (static collision) |
+| `sprite.atlas` | 1.0 | `engine/runtime/sprite_atlas.gd` | Atlas PNG + region table → regions/frames as `Texture2D` / `SpriteFrames` (content-schema §29) |
+| `gm.command` | 1.0 | `autoload/gm.gd` | Dev/QA command registry (`register`/`execute`/`commands`); **disabled in release builds** |
+| `gm.panel` | 1.0 | `autoload/gm.gd` | Dev-only command panel (`toggle_panel`); never built when disabled |
 | `path.find` | 1.0 | `engine/runtime/path_finder.gd` | Height-aware grid A* (`navgrid` bitmap + elevation; steep walls/canyons) |
 | `save.slot` | 1.0 | `autoload/save_service.gd` | Progress read/write (local + Nakama cloud save) |
 | `script.gdscript` | 1.0 | content `*.gd` | GDScript content scripts |
@@ -107,6 +110,12 @@ RegionTrigger.region_id / body_mask ; entered/exited signals   # Also emits Even
 # Terrain (terrain.tiled; Tiled .tmj, read-only)
 TerrainMap.terrain_path / load_tiled(path) ; size_cells() ; has_pathing()
 TerrainMap.walkable_cell(cx, cy) / walkable_px(pos) ; height_cell(cx, cy)   # pathing=0 阻挡；越界阻挡
+# Sprite atlas (sprite.atlas; atlas PNG + region table)
+SpriteAtlas.from_id(id) ; configure(def) ; is_loaded() ; texture()
+SpriteAtlas.region(name) / has_region(name) ; frame_textures(anim) ; sprite_frames()
+# GM (gm.command / gm.panel; dev-only, disabled in release)
+Gm.is_enabled() / set_enabled(v) ; register(name, handler, meta?) ; execute(name, args) ; commands()
+Gm.toggle_panel(parent)   # dev-only; null when disabled
 # Camera (camera.control)
 FollowCamera.target / smooth / rotate_with_target / free_rotation / set_zoom_level(z) / zoom_by(d) / rotate_by(dyaw) / shake(strength)
 # Touch input (ui/touch_controls.tscn)

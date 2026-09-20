@@ -64,6 +64,8 @@ See [content-package.md](content-package.md).
 | `biomeMap` | reference | Yes | Biome distribution |
 | `overrides[]` | reference | No | Manual overrides |
 | `defaultLighting` | reference | No | Lighting preset |
+| `defaultEntry` | reference | No | Default spawn (a `poi` id); absent → world center |
+| `procgen` | object | No | Optional generation inputs for `content bake-world`: `height`/`temperature`/`moisture` (`{scale,octaves,seed}`; temperature also `latitudeBias`), `hydrology` (`{rivers,threshold,waterLevel}`), `erosion` (`{strength}`), `plates` (reserved). **Absent = current deterministic fBm** (backward compatible) |
 
 ## 3. `biome`
 
@@ -374,3 +376,16 @@ For the machine-readable Schema, validator CLI, and capability matrix see [conte
 - **Canonical form**: `Player.appearance = { "species": <id>, "params": { <paramId>: <value> } }`; values are normalized to the param's kind/range before persistence (`Appearance.normalize`).
 - **Compact replication**: `akey = "<species>@<hash>"` (hash of the canonical params). Snapshots carry `akey` only; the full params are fetched on demand via RPC `appearance_get` ([protocol.md](protocol.md) §8).
 - **Server authority**: on cloud write the platform validates/clamps params against the content-projected schema ([save-schema.md](save-schema.md) §10); the save is the source of truth for a player's appearance.
+
+## 29. `sprite_atlas` (sprite atlas + region table)
+
+> Generic primitive for the capability `sprite.atlas`. Content ships **one atlas PNG + a region table** instead of N individual frame PNGs; the engine loads it and exposes regions/frames as `Texture2D` / `SpriteFrames`. The platform defines only the format (no art).
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `image` | string | Yes | Atlas texture path (pack-relative) |
+| `regions[]` | region | Yes | `{ name, x, y, w, h }` — pixel region in the atlas; `name` is the lookup key |
+| `frames` | map<string,array> | No | Animation name → ordered region names (e.g. `{ "walk": ["walk_0","walk_1"] }`) |
+
+- API: `SpriteAtlas.from_id(id)`, `region(name) -> Texture2D`, `frame_textures(anim)`, `sprite_frames()` (see [engine-sdk.md](engine-sdk.md) §3).
+- Packing the PNG itself is content-side (atlas + region table); the engine only loads.
