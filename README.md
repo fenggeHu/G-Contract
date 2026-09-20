@@ -8,6 +8,7 @@ Public contract and integration repository for **content creators**. It is a **r
 - `shared/contract/`: `capabilities.json`, `content-<ver>.json` (content Schema), entry points `def/manifest/defs-file.json`
 - `shared/protocol/`, `shared/model/`: protocol IDL and shared models
 - `docs/contracts/`: field-level contracts and tooling (Schema / examples / package / CLI / SDK / events / hooks / migrations / protocol / save)
+- `docs/contracts/content-integration.md`: **start here for integration** — player appearance (`species`) and entering the persistent world (`enter_world`)
 
 ## Usage (no platform source required)
 ```bash
