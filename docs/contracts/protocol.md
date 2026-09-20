@@ -81,6 +81,8 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 | `save_write` | `{snapshot, expected_revision}` | `{ok, revision, snapshot}` or `{ok:false, err:"conflict", revision, snapshot}` | Server-authoritative cloud write (CAS); on mismatch returns the server snapshot (**server wins**). See [save-schema.md](save-schema.md) §9 |
 | `enter_world` | `{prefer_poi?, presence_meta?}` | `{ok, world_id, match_id, proto, spawn:{poi_id,x,y,altitude}, revision}` | Enter the **persistent world** room (creates/ensures the singleton world match); the server resolves the authoritative spawn from the cloud save `player.location`, else the content projection `presence_meta` (`default_entry` / `pois`) |
 | `leave_world` | `{}` | `{ok}` | Mark the caller as leaving the world (cross-authority switch / logout) |
+| `instance_enter` | `{mode, params?}` | `{ok, match_id, mode}` | Cross-authority switch world → instance: creates the instance match; the client leaves the world presence and joins it |
+| `instance_exit` | `{}` | `{ok}` | Cross-authority switch instance → world: the client leaves the instance and re-enters the world (`enter_world`) |
 | `appearance_get` | `{user_id, species}` | `{ok, species, params}` or `{ok:false, err:"not_found"}` | Fetch a player's full appearance params for replication (by entity `id` + `species`; bounded cache; see §8 appearance) |
 
 - `pvp` optional parameters: `max_players` (default 4) · `respawn_seconds` (default 3) · `score_target` (first to reach wins, 0 = unlimited) · `time_limit` (tick limit, 0 = unlimited) · `arena{w,h}` (coordinate bounds).

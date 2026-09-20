@@ -114,7 +114,10 @@ TerrainMap.walkable_cell(cx, cy) / walkable_px(pos) ; height_cell(cx, cy)   # pa
 SpriteAtlas.from_id(id) ; configure(def) ; is_loaded() ; texture()
 SpriteAtlas.region(name) / has_region(name) ; frame_textures(anim) ; sprite_frames()
 # GM (gm.command / gm.panel; dev-only, disabled in release)
-Gm.is_enabled() / set_enabled(v) ; register(name, handler, meta?) ; execute(name, args) ; commands()
+Gm.is_enabled() / set_enabled(v) ; register(name, handler, meta?) ; execute(name, args) ; commands()  # also NetClient.upload_crash_report()
+# Crash reporting (trial stub; upload requires Privacy consent)
+CrashGuard.build_report(reason) ; store_report(reason) ; has_report() ; read_report() ; clear_report()
+NetClient.upload_crash_report()   # -> server `crash_report` (g3/crash_<user>)
 Gm.toggle_panel(parent)   # dev-only; null when disabled
 # Camera (camera.control)
 FollowCamera.target / smooth / rotate_with_target / free_rotation / set_zoom_level(z) / zoom_by(d) / rotate_by(dyaw) / shake(strength)
@@ -136,6 +139,7 @@ SaveService.save_local/load_local ; save_cloud/load_cloud ; autosave
 # Network (net.client)
 NetClient.connect_to() ; join() ; send_input(dx, dy) ; attack()
 NetClient.enter_world(prefer_poi?) ; leave_world() ; appearance_get(user_id, species)  # 持久世界房间 + 服务端权威出生点
+NetClient.enter_instance(mode, params, location) ; exit_instance()   # 跨权威切换（世界↔副本）；事件 instance_enter/exit
 NetClient.submit_score/top_scores ; add_friend_by_username/list_friends ; create_party
 NetClient.cloud_save_write/cloud_save_read  # 经 RPC save_write/save_read；CAS + server wins（save-schema.md §9）
 # Audio (audio.play/music/mixer)

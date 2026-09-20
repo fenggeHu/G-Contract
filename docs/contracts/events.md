@@ -77,6 +77,13 @@
 | `net_connected` | `{}` | Network connection established |
 | `net_disconnected` | `{}` | Network disconnected (socket closed) |
 
+### Instance / cross-authority (`scene.switch`)
+
+| Event | payload | Trigger |
+|---|---|---|
+| `instance_enter` | `{ instanceId }` | Crossed from world into an instance (authority switched) |
+| `instance_exit` | `{ instanceId }` | Left an instance back to the world |
+
 ### Localization
 
 | Event | payload | Trigger |

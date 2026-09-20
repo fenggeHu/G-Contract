@@ -30,6 +30,8 @@
     { "name": "create_match", "in": ["mode", "max_players", "respawn_seconds", "score_target", "time_limit", "arena", "combat"] },
     { "name": "enter_world", "in": ["prefer_poi", "presence_meta"] },
     { "name": "leave_world", "in": [] },
+    { "name": "instance_enter", "in": ["mode", "params"] },
+    { "name": "instance_exit", "in": [] },
     { "name": "appearance_get", "in": ["user_id", "species"] }
   ]
 }
