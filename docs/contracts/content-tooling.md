@@ -95,14 +95,14 @@ At release time the engine produces `release.json` (in the same batch as the `co
 
 ```json
 {
-  "engine": "0.1.0",
+  "engine": "0.2.0",
   "godot": "4.7.2",
-  "schema": "1.3",
+  "schema": "1.5",
   "schemaSupported": ["1"],
-  "capabilities": { "total": 38, "enabled": 38, "deferred": 0, "digest": "sha256:…" },
+  "capabilities": { "total": 45, "enabled": 45, "deferred": 0, "digest": "sha256:…" },
   "artifacts": {
     "contentCli": "content",
-    "devkitLite": "engine-devkit-lite-0.1.0.zip",
+    "devkitLite": "engine-devkit-lite-0.2.0.zip",
     "contract": "shared/contract",
     "capabilities": "App/engine/sdk/capabilities.json",
     "contentSchema": "App/engine/sdk/schema/content-1.5.json"
