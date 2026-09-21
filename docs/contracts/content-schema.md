@@ -234,6 +234,8 @@ See [content-package.md](content-package.md).
 | `prerequisites[]` | reference | No | Prerequisites |
 | `onComplete` | script reference | No | Completion callback |
 
+> **引擎自动上报（数据驱动，G-Contract #42）**：`kill` = `entity_died`；`talk` = 交互触发对话（目标为实体/npc id）或对话开始（目标可为 dialog id / 首节点 `speaker`）；`collect` = `Player.add_item`；`reach` = 世界着陆 `player_landed`（POI id）或 `region_enter`。内容无需自定义上报。
+
 ## 18. `dialog` (dialogue)
 
 | Field | Type | Required | Description |
