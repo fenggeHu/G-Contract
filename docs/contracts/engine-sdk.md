@@ -35,6 +35,7 @@
 | `sprite.atlas` | 1.0 | `engine/runtime/sprite_atlas.gd` | Atlas PNG + region table → regions/frames as `Texture2D` / `SpriteFrames` (content-schema §29) |
 | `gm.command` | 1.0 | `autoload/gm.gd` | Dev/QA command registry (`register`/`execute`/`commands`); **disabled in release builds** |
 | `gm.panel` | 1.0 | `autoload/gm.gd` | Dev-only command panel (`toggle_panel`); never built when disabled |
+| `perf.replay` | 1.0 | `autoload/bench_replay.gd` | Deterministic input replay for reproducible perf baselines (`G3_REPLAY=<json>`; target opts in via group `g3_replay_target`) |
 | `path.find` | 1.0 | `engine/runtime/path_finder.gd` | Height-aware grid A* (`navgrid` bitmap + elevation; steep walls/canyons) |
 | `save.slot` | 1.0 | `autoload/save_service.gd` | Progress read/write (local + Nakama cloud save) |
 | `script.gdscript` | 1.0 | content `*.gd` | GDScript content scripts |
@@ -119,6 +120,8 @@ Gm.is_enabled() / set_enabled(v) ; register(name, handler, meta?) ; execute(name
 CrashGuard.build_report(reason) ; store_report(reason) ; has_report() ; read_report() ; clear_report()
 NetClient.upload_crash_report()   # -> server `crash_report` (g3/crash_<user>)
 Gm.toggle_panel(parent)   # dev-only; null when disabled
+# Deterministic replay (perf.replay; G3_REPLAY=<json>)
+BenchReplay.load_replay(path) ; enabled / duration / loop      # target in group "g3_replay_target" implements set_replay_input(dx, dy)
 # Camera (camera.control)
 FollowCamera.target / smooth / rotate_with_target / free_rotation / set_zoom_level(z) / zoom_by(d) / rotate_by(dyaw) / shake(strength)
 # Touch input (ui/touch_controls.tscn)

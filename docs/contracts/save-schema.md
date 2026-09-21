@@ -105,6 +105,13 @@
 - On revision mismatch the server rejects the write and returns the authoritative snapshot (`err="conflict"`); the client **adopts the server snapshot (server wins)**. This makes administrative corrections durable against stale client writes.
 - Local save (`user://save.json` + outbox) is a cache/offline buffer; the cloud remains authoritative when online.
 
+## 10. Snapshots, reset and rollback
+
+- **History**: management writes keep the last N snapshots in `g3/progress_hist_<user>` (default N=5), each with its storage `version` and timestamp.
+- **reset** (`player.reset`): writes a default snapshot as a **new** record (history preserved), CAS-checked; audited.
+- **rollback** (`player.rollback`): restores a chosen historical snapshot as a new record; **requires approval** (ADR-0008) and records before/after revisions in the audit log.
+- **No destructive overwrite**: prior records/history are never deleted in-place by the panel. Database-level point-in-time restore (Postgres) is a separate operator procedure.
+
 ## 10. Appearance normalization (server-authoritative)
 
 > Generic, content-free validation. See [protocol.md](protocol.md) §8 (`appearance_get`, `appearance_schema` projection).

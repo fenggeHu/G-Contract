@@ -1,9 +1,9 @@
 # Contract: Admin Panel (G_Admin)
 
-- Status: Proposed (execution gated by ADR-0006 owner approval)
+- Status: Active
 - Updated: 2026-09-20
 
-> The operator/content-admin control plane for the G3 platform. Companion: [content-authoring.md](content-authoring.md). Design rationale: admin-ops-panel-plan.md, ADR-0001..0006.
+> The operator/content-admin control plane for the G3 platform. Companion: [content-authoring.md](content-authoring.md) · [moderation.md](moderation.md) · [remote-config.md](remote-config.md) · [telemetry.md](telemetry.md). Design rationale: admin-ops-panel-plan.md, ADR-0001..0010.
 
 ## 1. Scope
 
@@ -33,42 +33,51 @@ Every action is typed and declared with metadata:
   scope: runtime | content,
   onlinePolicy: live | block | kick_then_write | at_rest,
   risk: low | medium | high | critical,
-  permission, idempotency: required | none }
+  permission,
+  cooldown: <seconds>,          // per (actor, action)
+  limit: <numeric cap>,         // condition check; over-cap -> approval
+  approval: none | required,    // dual control for high-risk
+  idempotency: required | none }
 ```
 
-| Domain | Actions (initial) |
-|---|---|
-| Auth (panel) | login, logout, whoami |
-| Account | list, get, create, update, ban, unban, kick, set_role, reset_password |
-| Player | get, patch, reset, rollback |
-| Inventory | list, grant, remove |
-| Mail | list, send, delete |
-| Match | list, get, kick, terminate, broadcast |
-| Moderation | report, list, ban, mute, unmute |
-| LiveOps | announce, motd_set, flag_set, event_start, event_stop |
-| Telemetry | overview, funnel, query |
-| Audit | list |
-| Command | catalog, execute |
-| Release | list, verify |
+| Domain | Actions | Status |
+|---|---|---|
+| Auth (panel) | login, logout, whoami | ✅ |
+| Account | get, ban, unban, kick, update, **recovery/bind/merge**（不做建号） | partial |
+| Player | get, patch, reset, rollback | partial（get/patch ✅） |
+| Inventory | list, grant, remove | ✅ |
+| Mail | send, list, delete | partial（send ✅） |
+| Match | list, terminate, broadcast, get, kick | partial |
+| Moderation | mute, unmute, report, list, appeal | planned（见 [moderation.md](moderation.md)） |
+| LiveOps | announce, motd_set, flag_set, event_start, event_stop | partial（announce ✅） |
+| Telemetry | overview, funnel, query | planned（见 [telemetry.md](telemetry.md)） |
+| Audit | list | ✅ |
+| Command | catalog, execute | planned |
+| Release | list, verify | planned |
 
 - **No command strings**: callers send an action id + parameters; the server validates before execution.
 - `onlinePolicy` governs targets that are currently online (see §5).
+- **Approval**: actions with `approval: required` (or over `limit`) create a pending `approval_request`; execution requires **dual approval** (two admins, or operator+admin). See ADR-0008.
+- **Idempotency**: mutating actions with `idempotency: required` carry an `idempotencyKey`; the server rejects replays.
 
 ## 4. RBAC and audit
 
 - Roles: `viewer < gm < operator < admin < superadmin`.
-- Permissions are dotted `domain.action` (e.g. `player.write`, `account.ban`, `liveops.announce`).
+- Permissions are dotted `domain.action` (e.g. `player.write`, `account.ban`, `liveops.announce`, `chat.mute`, `moderation.action`, `liveops.motd`, `liveops.flag`, `liveops.event`, `telemetry.read`, `command.execute`, `approval.decide`).
+- **Separate mute vs ban**: `chat.mute` (support) is distinct from `account.ban` (elevated + approval). See [moderation.md](moderation.md).
 - Roles/permissions are stored in the `admin` schema; enforced in the BFF and re-checked server-side.
-- Every write action is audited (append-only):
+- Middleware chain: **Auth → RBAC → ConditionCheck → Approval → Execute → Audit**. Over-limit/high-risk actions produce a pending `approval_request` (dual approval; never self-approve).
+- Every write action is audited (**append-only**, failure/denial included):
 
 ```
 AuditRecord {
   id, ts, actorId, actorRole, actorIp, action, risk,
-  targetType, targetId, before, after, result, reason, requestId
+  targetType, targetId, before, after, result, reason, requestId,
+  prevHash, hash          // tamper-evident hash chain
 }
 ```
 
-- Optional hash chaining for tamper evidence.
+- Retention: ≥ 180 days for sensitive actions (grant/ban/export). See ADR-0008.
 
 ## 5. Online policy
 
@@ -85,13 +94,16 @@ The BFF resolves online state before dispatch. `live` pushes require authorizati
 
 - Transport: Nakama RPC, JSON payload (mature), documented here.
 - **Server-side authorization**: every plugin RPC requires the shared-secret header `X-G3-Admin-Token` matching the server env `G3_ADMIN_RPC_TOKEN` (else `code 7`). Deployments MUST set a non-default `http_key` and `G3_ADMIN_RPC_TOKEN`, and MUST NOT expose the Nakama HTTP port publicly. See ADR-0004.
-- `admin_match_list` → `{ matches: [{ id, size, label }] }`
-- `admin_match_kick` → in: `{ match_id, user_id }`; the plugin calls `MatchSignal`; `match.lua`'s `match_signal` calls `dispatcher.match_kick`.
-- `admin_match_terminate` → in: `{ match_id }`
-- `admin_match_broadcast` → in: `{ match_id, message }`
-- `admin_presence_list` → `{ presences: [...] }`
+- Match: `admin_match_list`, `admin_match_get`, `admin_match_kick`, `admin_match_terminate`, `admin_match_broadcast`, `admin_presence_list`
+- Player: `admin_player_get`, `admin_player_patch`
+- Account: `admin_account_get`, `admin_account_ban`, `admin_account_unban`, `admin_account_list`, `admin_account_update`
+- Inventory: `admin_inventory_list`, `admin_inventory_grant`, `admin_inventory_remove`
+- Mail/LiveOps: `admin_mail_send`, `admin_liveops_announce`, `admin_liveops_motd_set`, `admin_liveops_flag_set`, `admin_liveops_event_start/stop`, `admin_config_get`（客户端拉取）
+- Moderation: `admin_moderation_mute`, `admin_moderation_unmute`, `admin_moderation_report`, `admin_moderation_report_list`
+- Telemetry: `admin_telemetry_overview`, `admin_telemetry_funnel`, `admin_telemetry_query`
 
 > `MatchKick` exists only on `MatchDispatcher` (in-match); external kick therefore routes via `MatchSignal` (see ADR-0003).
+> Config/flags/events delivered to clients via RPC `config_get` (see [remote-config.md](remote-config.md)); mute enforced on the message path (see [moderation.md](moderation.md)).
 
 ## 7. Boundaries
 
@@ -99,6 +111,8 @@ The BFF resolves online state before dispatch. `live` pushes require authorizati
 2. Generic and reusable across content providers; no single-provider customization.
 3. Game protocol and game data plane are unchanged.
 4. One change per repository; contract first.
+5. **GM domain separation**: ops identities/credentials are separate from player auth; a leaked ops account must not equal game-server root. The **dev-only** in-engine GM (`gm.command`/`gm.panel`, release-stripped) is a *developer/QA* surface and is **not** this ops panel; both must not share the player auth domain.
+6. No direct edits to player data tables by the panel: runtime mutations go through the Nakama Go plugin RPCs only (see `G_Server/AGENTS.md`).
 
 ## 8. Versioning
 

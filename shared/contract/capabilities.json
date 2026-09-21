@@ -23,6 +23,7 @@
     { "name": "sprite.atlas", "version": "1.0", "status": "enabled" },
     { "name": "gm.command", "version": "1.0", "status": "enabled" },
     { "name": "gm.panel", "version": "1.0", "status": "enabled" },
+    { "name": "perf.replay", "version": "1.0", "status": "enabled" },
     { "name": "path.find", "version": "1.0", "status": "enabled" },
     { "name": "save.slot", "version": "1.0", "status": "enabled" },
     { "name": "script.gdscript", "version": "1.0", "status": "enabled" },
