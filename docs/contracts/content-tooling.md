@@ -32,7 +32,8 @@
 | `content playtest <scene>` | Headlessly auto-run a content scene and **assert no errors** (H1 quantitative gate) |
 | `content release` | Produce `dist/release.json` (version matrix + artifact manifest) |
 | `content verify-release` | Validate that `release.json` is consistent with the contract (prerequisite for consumer-side pinning) |
-| `content bake-world` | Bake the world map overhead texture → `<pack>/world/<x>_<y>.jpg` (1024px/chunk); accepts optional `world.procgen` inputs |
+| `content bake-world` | Bake the world map overhead texture → `<pack>/world/<x>_<y>.jpg` (default 1024px/chunk; `--bake-px <n>`); accepts optional `world.procgen` inputs |
+| `content bake-report` | World-map size/quality tradeoff report (bakes px/chunk 1024/512/256 into temp; prints source JPG size + GPU texture estimate); data only, no defaults changed |
 | `content pack-atlas` | Pack `*.atlas.json` frame manifests → atlas PNG + `sprite_atlas` Def (deterministic shelf packing; PNG frames only) |
 
 **I/O**
