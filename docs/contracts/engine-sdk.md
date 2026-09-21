@@ -89,6 +89,7 @@ SceneManager.to_menu() ; go(path, entry?) ; consume_pending()
 SceneManager.to_world(entry := "", poi_id := "") -> void   # Return to world (content does not reference main/ paths)
 # UI
 UI.hud(parent) -> Node                             # Mount generic HUD (content does not reference res://ui)
+UI.touch_controls(parent) -> Node                  # Mount touch layer on touch devices (joystick→ui_*, button→ui_accept; #43)
 # World (engine generic scene engine/runtime/world/world_scene.tscn, driven by world Def)
 WorldStream.configure(world_def) ; world_to_px(m) ; px_to_world(px) ; chunks
 FlightPlayer.speed_px / auto / touch_dir             # Flight movement (auto/touch/keyboard)
