@@ -66,6 +66,7 @@ See [content-package.md](content-package.md).
 | `defaultLighting` | reference | No | Lighting preset |
 | `defaultEntry` | reference | No | Default spawn (a `poi` id); absent → world center |
 | `procgen` | object | No | Optional generation inputs for `content bake-world`: `height`/`temperature`/`moisture` (`{scale,octaves,seed}`; temperature also `latitudeBias`), `hydrology` (`{rivers,threshold,waterLevel}`), `erosion` (`{strength}`), `plates` (reserved). **Absent = current deterministic fBm** (backward compatible) |
+| `abilities[]` | reference | No | **世界场景技能**：飞行世界中额外可用的技能（合并规则同 `scene.abilities`） |
 
 ## 3. `biome`
 
@@ -105,6 +106,7 @@ See [content-package.md](content-package.md).
 | `objects[]` | {def,pos,altitude?,rot} | No | Initial objects/NPCs |
 | `lighting` | reference | No | Lighting preset |
 | `music` | reference | No | Music event |
+| `abilities[]` | reference | No | **场景技能**：本场景额外可用的技能（与玩家 `stats.abilities` ∪ 已装备 `item.grantsAbility` 合并，引擎技能栏展示，按键 1..9 施放） |
 | `entryPoints[]` | {id,pos,altitude?} | No | Entrances (city gates/cave mouths) |
 
 ## 6. `region`
@@ -121,7 +123,7 @@ See [content-package.md](content-package.md).
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `kind` | enum | Yes | `city/cave/landmark/portal` |
-| `worldPos` | {x,y} | Yes | Meter coordinates (±4096) |
+| `worldPos` | {x,y} | Yes | Meter coordinates (within `world.sizeM`; 当前示例世界 ±2048) |
 | `altitude` | number | No | Absolute altitude (meters) |
 | `scene` | reference | No | Hosting scene |
 | `icon` | reference | No | Map icon |

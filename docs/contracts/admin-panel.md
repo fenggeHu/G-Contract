@@ -3,7 +3,7 @@
 - Status: Active
 - Updated: 2026-09-20
 
-> The operator/content-admin control plane for the G3 platform. Companion: [content-authoring.md](content-authoring.md) · [moderation.md](moderation.md) · [remote-config.md](remote-config.md) · [telemetry.md](telemetry.md). Design rationale: admin-ops-panel-plan.md, ADR-0001..0010.
+> The operator/content-admin control plane for the G3 platform. Companion: [content-authoring.md](content-authoring.md) · [moderation.md](moderation.md) · [remote-config.md](remote-config.md) · [telemetry.md](telemetry.md). Design rationale: admin-ops-panel/plan.md, ADR-0001..0010.
 
 ## 1. Scope
 

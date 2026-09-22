@@ -184,6 +184,12 @@
               "type": "object"
             }
           }
+        },
+        "abilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -336,6 +342,12 @@
         },
         "music": {
           "$ref": "#/$defs/ref"
+        },
+        "abilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
