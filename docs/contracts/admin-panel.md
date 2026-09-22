@@ -97,7 +97,7 @@ The BFF resolves online state before dispatch. `live` pushes require authorizati
 - Match: `admin_match_list`, `admin_match_get`, `admin_match_kick`, `admin_match_terminate`, `admin_match_broadcast`, `admin_presence_list`
 - Player: `admin_player_get`, `admin_player_patch`
 - Account: `admin_account_get`, `admin_account_ban`, `admin_account_unban`, `admin_account_list`, `admin_account_update`
-- Inventory: `admin_inventory_list`, `admin_inventory_grant`, `admin_inventory_remove`
+- Inventory: `admin_inventory_list` (returns the BFF-compatible `inventory` defId view **and** the v4 `items` instance view: `{instanceId, defId, count, slot, bound, durability}`), `admin_inventory_grant`, `admin_inventory_remove`
 - Mail/LiveOps: `admin_mail_send`, `admin_liveops_announce`, `admin_liveops_motd_set`, `admin_liveops_flag_set`, `admin_liveops_event_start/stop`, `admin_config_get`（客户端拉取）
 - Moderation: `admin_moderation_mute`, `admin_moderation_unmute`, `admin_moderation_report`, `admin_moderation_report_list`
 - Telemetry: `admin_telemetry_overview`, `admin_telemetry_funnel`, `admin_telemetry_query`

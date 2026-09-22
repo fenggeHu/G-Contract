@@ -50,7 +50,7 @@
 | `telemetry.event` | 1.0 | `autoload/telemetry.gd` | Structured telemetry event logging to disk (JSONL, bounded) |
 | `world.seed` | 1.0 | `autoload/rng.gd` | Runtime deterministic randomness (derive stable substreams from world `seed` root) |
 | `quality.tier` | 1.0 | `autoload/quality.gd` | Quality tiers low/medium/high (auto detection); event `quality_changed` |
-| `targeting.query` | 1.0 | `autoload/targeting.gd` | Pure targeting queries (nearest / in_radius / best) |
+| `targeting.query` | 1.0 | `autoload/targeting.gd` | Pure targeting queries (nearest / in_radius / best / cone / line) |
 | `interaction.core` | 1.0 | `autoload/interaction.gd` | Interaction range checks and action execution (teleport/give/dialog/quest) |
 | `audio.play` | 1.0 | `autoload/audio_service.gd` | `sound_event` event playback (resource pool/cooldown/max instances) |
 | `audio.music` | 1.0 | `autoload/audio_service.gd` | Music play/stop (`play_music` / `stop_music`) |
@@ -60,8 +60,14 @@
 | `render.post` | 1.0 | `autoload/render.gd` | Post-processing (glow/adjustment) configuration |
 | `entity.spawn` | 1.0 | `autoload/entities.gd` | Runtime entity registration (Def→runtime state; event `entity_spawned`) |
 | `entity.query` | 1.0 | `autoload/entities.gd` | Entity queries (by def/type/alive/in range; `entity_despawned`) |
-| `combat.timeline` | 1.0 | `autoload/combat.gd` | Ability timeline: castMs/cooldown/cooldown group/range validation + effect resolution |
+| `combat.timeline` | 1.0 | `autoload/combat.gd` | Ability timeline: castMs/cooldown/cooldown group/range validation + effect resolution; multi-target `cone`/`line` (candidates), `summon` effect |
 | `ability.grant` | 1.0 | `autoload/player.gd` | Abilities granted by equipped items (`item.grantsAbility`), active while equipped |
+| `progression.tree` | 1.0 | `autoload/progression.gd` | Talent/skill tree: tiers/requires/points; grants & revokes abilities (`source=progression`) |
+| `action.core` | 1.0 | `autoload/actions.gd` | Generic actions (`action` Def): learn_ability/teleport/give/grant_items/consume/destroy/pick_up; `item.onUseEffects` / `item.equipEffects` (action entries) / `ability.actions` |
+| `loot.core` | 1.0 | `autoload/loot.gd` | Loot table: weighted picks, per-entry chance, seed-derived RNG, pity guarantee |
+| `item.traits` | 1.0 | `autoload/player.gd` | Item traits: `stackable`/`maxStack` (aggregate by defId), `durable` + `durability`, `binding` (BoP/BoE/BoA) |
+| `inventory.core` | 1.0 | `autoload/player.gd` | Bag capacity (`inventory` Def) + item instance model (save v4) |
+| `vendor.core` | 1.0 | `autoload/vendor.gd` | Vendor/trainer/repair: prices, currency item, reputation gates |
 
 > Must match the `enabled` set in `App/engine/sdk/capabilities.json` (CI validation).
 
@@ -103,6 +109,9 @@ PlayerCharacter.character_def / camera_def / species_def ; set_intent(v) ; set_a
 # Appearance (appearance.apply; parameterized, content-declared params)
 Appearance.normalize(species_def, params) -> Dictionary ; Appearance.key(species_id, params) -> String
 Appearance.apply(species_def, params) -> Node ; Appearance.params(akey) ; Appearance.remember(akey, species, params)
+# PlayerAvatar (engine node): assemble a character profile into a renderable avatar (local/remote/scene)
+PlayerAvatar.setup(species_def, params) -> bool ; set_frame(act, dir, frame) ; presentation() -> Node
+# species.presentation contract (content): apply_params(params) required; set_frame(act, dir, frame) optional
 # Physics queries (physics.query; read-only, no space returns empty)
 PhysicsQuery.overlap_circle(node, center, radius, mask, exclude) ; raycast(node, from, to, mask, exclude) ; ground_check(body)
 # Pathfinding (path.find; height-aware grid A*, data from navgrid Def)

@@ -1,7 +1,7 @@
 # Contract: Data and Save Schema
 
 - Status: Active
-- Updated: 2026-09-20
+- Updated: 2026-09-22
 
 > Covers two modes: **offline (local authority)** and **logged-in (cloud save)**. See internal platform doc for details.
 
@@ -17,12 +17,18 @@
 
 ```json
 {
-  "version": 1,
+  "version": 4,
   "player": {
     "stats_id": "stats_player",
     "level": 1, "xp": 0, "hp": 100,
-    "inventory": ["item_steel_sword"],
-    "equipped": { "weapon": "", "armor": "", "artifact": "" },
+    "items": [
+      { "instanceId": "i-7f3c…", "defId": "item_steel_sword", "count": 1,
+        "slot": "weapon", "bound": "boe", "durability": 100, "affixRolls": [] },
+      { "instanceId": "i-91ab…", "defId": "item_health_herb", "count": 5 }
+    ],
+    "abilities": [ { "id": "ability_slash", "source": "learned" } ],
+    "progression": { "tree_talents": { "points": 1, "nodes": ["n_power"] } },
+    "equipped": { "weapon": "i-7f3c…", "armor": "", "artifact": "" },
     "appearance": { "species": "species_human", "params": { "skin": "#c8a07a", "build": 1.05 } },
     "location": { "world_id": "world_aurelia", "poi_id": "", "x": 0.0, "y": 0.0, "altitude": 0.0 },
     "resources": { "mana": 42.0 }
@@ -38,11 +44,14 @@
 
 | Field | Description |
 |---|---|
-| `version` | Save version (monotonically increasing, currently `1`) |
+| `version` | Save version (monotonically increasing, currently `4`; see §5) |
 | `player.stats_id` | Base stats Def id (`stats`) |
 | `player.level/xp/hp` | Level / XP / current HP |
-| `player.inventory` | List of item ids |
-| `player.equipped` | Slot → item id; slot ids are declared by content `equipment.slots[]` (§25 content-schema) |
+| `player.items` | Item **instances** (1.6/§4): `{instanceId, defId, count, slot?, bound?, durability?, affixRolls?}`. Uniqueness: unique/equipped/affixed items carry an instance; stackable items may be aggregated by `defId` (single entry with `count`) |
+| `player.abilities` | `{ id, source }` where `source ∈ {learned, item, granted, quest, progression, trained}` (provenance for skill books / temporary grants) |
+| `player.progression` | Per-tree allocation: `{ <tree_id>: { points, nodes[] } }` (see content-schema §30 `progression_tree`) |
+| `player.equipped` | Slot → **instanceId**; slot ids are declared by content `equipment.slots[]` (§25 content-schema) |
+| `player.inventory` | **Deprecated (v3, read-only)**: legacy list of item ids; migrated to `player.items` (count 1) on load; removed in the next MAJOR |
 | `player.resources` | Resource id → current value (from `stats.resources[]`). Repleted over time by `regenPerSec`; spent by `ability.cost.resource`. Absent → initialized to max |
 | `player.appearance` | `{ species, params }`; canonicalized against the `species` Def (§28 content-schema). Absent in old saves → defaults |
 | `player.location` | Last world position `{ world_id, poi_id, x, y, altitude }`; used by `enter_world` for the spawn point. Absent → content `world.defaultEntry` |
@@ -50,6 +59,8 @@
 | `quests.pending` | Set of quests pending turn-in |
 | `quests.done` | Set of completed quests |
 | `kv` | Generic KV (content-layer cross-session persistence, `SaveService.get_value/set_value`); backward compatible, may be absent in old saves |
+
+> **Empty-collection note**: cloud snapshots pass through the Nakama Lua RPC (`save_write`), where an empty JSON array may be re-encoded as `{}`. Consumers MUST treat `{}` (or absent) as an empty array for `player.items` / `player.abilities`. The Go admin path (`runtime/go`) preserves `[]`.
 
 ## 3. Modes and authority
 
@@ -66,7 +77,8 @@
 
 ## 5. Versions and conflicts
 
-- `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (`1`→`2`: backfill `player.appearance`/`player.location`; `2`→`3`: backfill `player.resources`; idempotent).
+- `version` is monotonically increasing; loading an old save upgrades it via the **migration chain** (idempotent): `1`→`2` backfill `player.appearance`/`player.location`; `2`→`3` backfill `player.resources`; `3`→`4` migrate `player.inventory[]` → `player.items[]` (count 1, fresh `instanceId`), move `player.equipped` values (item id → instanceId), and default `player.abilities`/`player.progression`.
+- **Save v4 is a MAJOR change** (item ids → instances). Migration is one-way and idempotent; the previous slot is kept in `save.bak` (rollback window = one write) and cloud history `g3/progress_hist_<user>` (§10).
 - Conflict granularity: **whole-save**, resolved by **server-authoritative CAS** (`save_write` + `revision`, §9): stale writers are rejected and adopt the server snapshot. No field-level merge.
 
 ## 6. Integrity
@@ -74,7 +86,7 @@
 - **Atomic write**: write `user://save.tmp` → rotate the backup slot → `rename` to replace the main save; an interruption does not produce a half-written main save.
 - **Hash validation**: on read, validate the snapshot against the envelope's `hash`; a mismatch is treated as corruption.
 - **Corruption fallback**: when the main save is missing/corrupted (parse failure or hash mismatch), fall back to `save.bak`; only if the backup is also unavailable, fall back to defaults without blocking startup.
-- **Migration chain**: migrate level by level by `version` (currently only `1`); migration and default-field backfilling are **idempotent** and can be repeated.
+- **Migration chain**: migrate level by level by `version` (currently `1`→`4`); migration and default-field backfilling are **idempotent** and can be repeated.
 
 ## 7. Implemented / Deferred
 
@@ -112,7 +124,7 @@
 - **rollback** (`player.rollback`): restores a chosen historical snapshot as a new record; **requires approval** (ADR-0008) and records before/after revisions in the audit log.
 - **No destructive overwrite**: prior records/history are never deleted in-place by the panel. Database-level point-in-time restore (Postgres) is a separate operator procedure.
 
-## 10. Appearance normalization (server-authoritative)
+## 11. Appearance normalization (server-authoritative)
 
 > Generic, content-free validation. See [protocol.md](protocol.md) §8 (`appearance_get`, `appearance_schema` projection).
 

@@ -68,6 +68,18 @@
 | `entity_died` | `{ entityId, killerId? }` | Entity died |
 | `effect_applied` | `{ targetId, effectId }` | Effect applied |
 
+### Inventory / Progression / Loot / Vendor (`action.core` / `loot.core` / `progression.tree` / `vendor.core`)
+
+| Event | payload | Trigger |
+|---|---|---|
+| `item_added` | `{ itemId, count }` | Item added to the player bag |
+| `ability_learned` | `{ abilityId, source }` | Ability learned (`learned`/`item`/`granted`/`quest`/`progression`) |
+| `progression_changed` | `{ treeId }` | Talent/skill tree allocation or reset |
+| `loot_rolled` | `{ tableId, drops }` | A loot table was evaluated |
+| `loot_picked` | `{ itemId }` | Ground item picked up (`action.pick_up`) |
+| `vendor_transaction` | `{ action, itemId, amount }` | Buy/sell completed |
+| `teleported` | `{ worldId }` | Teleport action applied (`action.teleport`) |
+
 ### Save / Network
 
 | Event | payload | Trigger |

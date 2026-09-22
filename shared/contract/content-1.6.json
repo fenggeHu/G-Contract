@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://g3.dev/schema/content-1.5.json",
-  "title": "G3 Content Schema 1.5",
+  "$id": "https://g3.dev/schema/content-1.6.json",
+  "title": "G3 Content Schema 1.6",
   "description": "Structural contract for Content Defs and Manifest. Semantics (required/references/uniqueness) are enforced by the content validator; see docs/contracts/content-tooling.md.",
   "$defs": {
     "id": {
@@ -484,7 +484,14 @@
           "type": "string"
         },
         "stats": {
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "$ref": "#/$defs/ref"
+            }
+          ]
         },
         "abilities": {
           "type": "array"
@@ -497,6 +504,35 @@
         },
         "spawn": {
           "$ref": "#/$defs/ref"
+        },
+        "level": {
+          "type": "object"
+        },
+        "rank": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "object",
+          "description": "位掩码（npc/unit/type/extra）"
+        },
+        "movement": {
+          "type": "string"
+        },
+        "services": {
+          "type": "object",
+          "description": "vendor/trainer/repair"
+        },
+        "loot": {
+          "$ref": "#/$defs/ref"
+        },
+        "damageSchool": {
+          "type": "string"
+        },
+        "attackTimeMs": {
+          "type": "integer"
+        },
+        "variance": {
+          "type": "number"
         }
       }
     },
@@ -538,7 +574,14 @@
           "type": "string"
         },
         "stats": {
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "$ref": "#/$defs/ref"
+            }
+          ]
         },
         "stack": {
           "type": "integer"
@@ -551,6 +594,91 @@
         },
         "grantsAbility": {
           "type": "array"
+        },
+        "quality": {
+          "type": "string",
+          "description": "品质（内容声明，如 common/rare/epic）"
+        },
+        "itemLevel": {
+          "type": "integer"
+        },
+        "requiredLevel": {
+          "type": "integer"
+        },
+        "inventoryType": {
+          "type": "string"
+        },
+        "allowedClasses": {
+          "type": "array"
+        },
+        "allowedRaces": {
+          "type": "array"
+        },
+        "combat": {
+          "type": "object"
+        },
+        "resistances": {
+          "type": "object"
+        },
+        "requirements": {
+          "type": "object"
+        },
+        "socket": {
+          "type": "object"
+        },
+        "economy": {
+          "type": "object"
+        },
+        "traits": {
+          "type": "object",
+          "description": "物品特性（可交易/耐久/可堆叠/绑定）",
+          "properties": {
+            "tradable": {
+              "type": "boolean"
+            },
+            "durable": {
+              "type": "boolean"
+            },
+            "stackable": {
+              "type": "boolean"
+            },
+            "maxStack": {
+              "type": "integer"
+            },
+            "binding": {
+              "enum": [
+                "bop",
+                "boe",
+                "boa"
+              ],
+              "description": "BoP/BoE/BoA"
+            }
+          }
+        },
+        "rules": {
+          "type": "object",
+          "description": "unique/questItem/noDrop/noSell/destroyable"
+        },
+        "appearance": {
+          "type": "object",
+          "description": "atlas/sprite/attach"
+        },
+        "expiry": {
+          "type": "object",
+          "description": "durationMs/refreshOnTrade"
+        },
+        "affixes": {
+          "type": "array"
+        },
+        "onUseEffects": {
+          "type": "array"
+        },
+        "equipEffects": {
+          "type": "array"
+        },
+        "durability": {
+          "type": "integer",
+          "description": "耐久上限（def 级；实例耐久存 save.player.items[].durability）"
         }
       }
     },
@@ -653,16 +781,21 @@
           "type": "object"
         },
         "modifiers": {
-          "type": "array"
+          "type": "array",
+          "description": "{stat,op,value,source?,durationMs?,priority?}"
         },
         "resources": {
           "type": "array"
         },
         "xp": {
-          "type": "integer"
+          "type": "integer",
+          "deprecated": true,
+          "description": "deprecated: 迁往 npc/quest"
         },
         "loot": {
-          "type": "array"
+          "type": "array",
+          "deprecated": true,
+          "description": "deprecated: 迁往 loot_table"
         }
       }
     },
@@ -711,7 +844,9 @@
             "enemy",
             "ally",
             "point",
-            "area"
+            "area",
+            "cone",
+            "line"
           ]
         },
         "effects": {
@@ -726,6 +861,42 @@
             "weapon",
             "artifact"
           ]
+        },
+        "school": {
+          "type": "string",
+          "description": "学派/元素（内容声明）"
+        },
+        "channelMs": {
+          "type": "integer"
+        },
+        "actions": {
+          "type": "array"
+        },
+        "coneAngleDeg": {
+          "type": "number",
+          "description": "target=cone 的半角（度）"
+        },
+        "lineWidth": {
+          "type": "number",
+          "description": "target=line 的半宽（米）"
+        },
+        "projectile": {
+          "type": "object",
+          "description": "投射物参数（combat.timeline）",
+          "properties": {
+            "speed": {
+              "type": "number"
+            },
+            "maxRange": {
+              "type": "number"
+            },
+            "radius": {
+              "type": "number"
+            },
+            "pierce": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -756,7 +927,10 @@
             "heal",
             "buff",
             "debuff",
-            "summon"
+            "summon",
+            "dot",
+            "hot",
+            "shield"
           ]
         },
         "amount": {
@@ -782,6 +956,43 @@
         },
         "tags": {
           "type": "array"
+        },
+        "school": {
+          "type": "string"
+        },
+        "tickMs": {
+          "type": "integer"
+        },
+        "variance": {
+          "type": "number"
+        },
+        "dispelType": {
+          "type": "string"
+        },
+        "formula": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "summon": {
+          "type": "object",
+          "description": "kind=summon 参数",
+          "properties": {
+            "entity": {
+              "type": "string"
+            },
+            "count": {
+              "type": "integer"
+            },
+            "spread": {
+              "type": "number"
+            }
+          }
         }
       }
     },
@@ -1130,6 +1341,16 @@
         },
         "species": {
           "$ref": "#/$defs/ref"
+        },
+        "stats": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "$ref": "#/$defs/ref"
+            }
+          ]
         }
       }
     },
@@ -1491,8 +1712,162 @@
         },
         {
           "$ref": "#/$defs/patch"
+        },
+        {
+          "$ref": "#/$defs/inventory"
+        },
+        {
+          "$ref": "#/$defs/action"
+        },
+        {
+          "$ref": "#/$defs/loot_table"
+        },
+        {
+          "$ref": "#/$defs/progression_tree"
         }
       ]
+    },
+    "inventory": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "inventory"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "labelKey": {
+          "type": "string"
+        },
+        "capacity": {
+          "type": "integer"
+        },
+        "slots": {
+          "type": "array"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "action"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "labelKey": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "learn_ability",
+            "teleport",
+            "consume",
+            "give",
+            "grant_items",
+            "destroy",
+            "pick_up"
+          ]
+        },
+        "params": {
+          "type": "object"
+        }
+      }
+    },
+    "loot_table": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "loot_table"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "labelKey": {
+          "type": "string"
+        },
+        "entries": {
+          "type": "array"
+        },
+        "guarantee": {
+          "type": "object"
+        }
+      }
+    },
+    "progression_tree": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "progression_tree"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "labelKey": {
+          "type": "string"
+        },
+        "points": {
+          "type": "object"
+        },
+        "tiers": {
+          "type": "array"
+        },
+        "nodes": {
+          "type": "array"
+        },
+        "presets": {
+          "type": "array"
+        }
+      }
     }
   }
 }

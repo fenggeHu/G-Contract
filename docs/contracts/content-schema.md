@@ -1,7 +1,7 @@
 # Contract: Content Schema (field-level)
 
 - Status: Active
-- Updated: 2026-09-20
+- Updated: 2026-09-22
 
 > The **authority on fields and semantics** for content data. The machine-readable Schema is exported at build time as `schema/content-<ver>.json` and loaded by the validator.
 
@@ -21,7 +21,7 @@
   "labelKey": "CITY_IRONHOLD", "worldPos": { "x": 2410, "y": 1180 } }
 ```
 
-- `abstract: true` is not stored, it only serves as a parent; `parent` references by `name`.
+- `abstract: true` is not stored, it only serves as a parent; `parent` references by `id` (1.6) with a `name` fallback (dual-read, ADR-0012).
 - Children override parent fields of the same name; arrays are **replaced** by default (`mergeMode: "append"` switches to append).
 
 ### 0.2 Patch (differential override)
@@ -143,7 +143,7 @@ See [content-package.md](content-package.md).
 |---|---|---|---|
 | `species` | reference | Yes | Appearance/species |
 | `faction` | reference | No | Faction |
-| `stats` | reference | No | Stats (§13) |
+| `stats` | object | No | Stats (§13)（与 `item.stats` 一致；统一为 `stats` Def 引用的提案见 data-model-review §3） |
 | `abilities[]` | reference | No | Abilities (§14) |
 | `behavior` | reference | No | Behavior script |
 | `dialog` | reference | No | Dialog tree (§18) |
@@ -379,7 +379,7 @@ For the machine-readable Schema, validator CLI, and capability matrix see [conte
 
 - **Canonical form**: `Player.appearance = { "species": <id>, "params": { <paramId>: <value> } }`; values are normalized to the param's kind/range before persistence (`Appearance.normalize`).
 - **Compact replication**: `akey = "<species>@<hash>"` (hash of the canonical params). Snapshots carry `akey` only; the full params are fetched on demand via RPC `appearance_get` ([protocol.md](protocol.md) §8).
-- **Server authority**: on cloud write the platform validates/clamps params against the content-projected schema ([save-schema.md](save-schema.md) §10); the save is the source of truth for a player's appearance.
+- **Server authority**: on cloud write the platform validates/clamps params against the content-projected schema ([save-schema.md](save-schema.md) §11); the save is the source of truth for a player's appearance.
 
 ## 29. `sprite_atlas` (sprite atlas + region table)
 
@@ -393,3 +393,54 @@ For the machine-readable Schema, validator CLI, and capability matrix see [conte
 
 - API: `SpriteAtlas.from_id(id)`, `region(name) -> Texture2D`, `frame_textures(anim)`, `sprite_frames()` (see [engine-sdk.md](engine-sdk.md) §3).
 - Packing the PNG itself is content-side (atlas + region table); the engine only loads.
+## 30. Schema 1.6 (compat MINOR) — additions
+
+> Per ADR-0012: **compatible MINOR** (major still `1`). Existing content keeps loading; the validator emits warnings for deprecated fields. Removal of deprecated fields is deferred to the next **MAJOR**.
+
+### 30.1 Version compatibility (dual-read)
+
+| Field | 1.5 | 1.6 | Rule |
+|---|---|---|---|
+| `stats` (on `item`/`npc`/`character`) | inline object | inline object **or** Def ref | dual-read: validator/engine accept both |
+| `parent` | refers by `name` | refers by `id` | dual-read: resolve `id` first, fall back to `name` |
+| `stats.xp`, `stats.loot` | active | **deprecated** (still valid) | warn `DEPRECATED`; migrate to `npc`/`loot_table`; removed in the next MAJOR |
+
+### 30.2 New Def types
+
+| Type | Key fields | Notes |
+|---|---|---|
+| `inventory` | `capacity`, `slots[]?` | Bag/warehouse capacity as an independent Def (no longer folded into `character`) |
+| `action` | `kind` (`learn_ability`/`teleport`/`consume`/`give`/`grant_items`/`destroy`/`pick_up`), `params` | Generic actions; usable as `item.onUseEffects[]` / `ability.actions[]` targets |
+| `loot_table` | `entries[]`, `guarantee?` | Weighted loot; server-authoritative (seed + guarantee) |
+| `progression_tree` | `points`, `tiers[]`, `nodes[]`, `presets[]` | Talent/skill tree; `nodes[].requires[]` is an intra-Def ref |
+
+### 30.3 Extended fields
+
+- `item`: `quality`, `itemLevel`, `requiredLevel`(canonical gate), `inventoryType`, `allowedClasses[]`, `allowedRaces[]`, `combat`, `resistances{}`, `requirements`, `socket`, `economy`, `durability`, `traits{}` (`tradable`/`durable`/`stackable`/`maxStack`/`binding` = `bop|boe|boa`), `rules{}` (unique/questItem/noDrop/noSell/destroyable/currency), `appearance`, `expiry`, `affixes[]`, `onUseEffects[]`, `equipEffects[]`.
+- `npc`: `level`, `rank`, `flags{}`, `movement`, `services{}` (vendor/trainer/repair), `loot` (ref), `damageSchool`, `attackTimeMs`, `variance`.
+- `ability`: `school`, `channelMs`, `actions[]`, `coneAngleDeg` (target=cone half-angle), `lineWidth` (target=line half-width); `target` enum adds `cone`/`line`.
+- `effect`: `school`, `tickMs`, `variance`, `dispelType`, `formula`, `summon{entity,count,spread}`; `kind` enum adds `dot`/`hot`/`shield`.
+
+> Naming: `item.rules{}` (not `flags{}`, which stays the `npc` bitmask); resistance uses `resistances{}`; currency is `item{category:"resource", rules:{currency:true}}`.
+
+### 30.4 Reference registry v2 (`relations`)
+
+`shared/model/relations-1.1.json` — one entry per relation: `{type, field, targets[], cardinality, list, crossPack, localRef, acyclic}`.
+
+- `field` is a dot path; arrays expand (`nodes.requires`, `entries.item`, `services.vendor.items`).
+- `targets[]` is a union (`effect|action`, `npc|item`); a value is valid if it exists in **any** target type.
+- `localRef: true` = intra-Def reference (no global lookup); `acyclic: true` = the CLI rejects cycles.
+- `quest.objectives.target` is intentionally **not** registered (polymorphic by `kind`, validated at runtime).
+
+> Frozen in 1.6: `inventory`, `action`, `loot_table`, `progression_tree`, the extended fields above, and `relations` v2. Runtime capabilities are **enabled** (see [engine-sdk.md](engine-sdk.md) §2.1) — implemented as `autoload/{progression,actions,loot,vendor}.gd` + item instances in `autoload/player.gd`.
+
+### 30.5 Declared but reserved (no runtime yet)
+
+The following 1.6 fields are frozen for content but have **no engine runtime** yet; do not depend on them:
+
+- `item.affixes[]`, `item.socket`, `item.expiry`, `item.appearance`, `item.allowedClasses[]`, `item.allowedRaces[]`, `item.combat`, `item.resistances{}`
+
+Implemented from the extended set: `item.durability`, `item.traits{binding,durable,stackable,maxStack}`, `item.rules{currency}`,
+`item.onUseEffects`, `item.equipEffects` (action entries), `ability.actions`, `ability.projectile{speed,maxRange,radius,pierce}`,
+`ability.coneAngleDeg/lineWidth`, `effect.summon`, `npc.services.vendor/repair/trainer`, `npc.loot` (death → server-authoritative drop),
+`loot_table.entries/guarantee`, `progression_tree.points/nodes/tiers/presets`.

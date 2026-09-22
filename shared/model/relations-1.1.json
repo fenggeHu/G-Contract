@@ -1,0 +1,292 @@
+{
+  "version": "1.1",
+  "description": "Def field -> target Def relations (single source). relation: {type, field (dot path, [] expands lists), targets[] (union; target=shorthand), cardinality, list, crossPack, localRef (intra-Def), acyclic}. quest.objectives.target 依 kind 多态（npc/item/poi/...），由运行时校验，不登记。",
+  "relations": [
+    {
+      "type": "biome",
+      "field": "lighting",
+      "targets": [
+        "lighting_profile"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "scene",
+      "field": "lighting",
+      "targets": [
+        "lighting_profile"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "scene",
+      "field": "regions",
+      "targets": [
+        "region"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "poi",
+      "field": "scene",
+      "targets": [
+        "scene"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "world",
+      "field": "biomeMap",
+      "targets": [
+        "biome"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "character",
+      "field": "camera",
+      "targets": [
+        "camera"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "character",
+      "field": "equipment",
+      "targets": [
+        "equipment"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "character",
+      "field": "species",
+      "targets": [
+        "species"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "character",
+      "field": "stats",
+      "targets": [
+        "stats"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "species",
+      "targets": [
+        "species"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "stats",
+      "targets": [
+        "stats"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "abilities",
+      "targets": [
+        "ability"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "dialog",
+      "targets": [
+        "dialog"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "spawn",
+      "targets": [
+        "spawn"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "loot",
+      "targets": [
+        "loot_table"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "npc",
+      "field": "services.vendor.items",
+      "targets": [
+        "item"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "item",
+      "field": "stats",
+      "targets": [
+        "stats"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "item",
+      "field": "grantsAbility",
+      "targets": [
+        "ability"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "item",
+      "field": "onUseEffects",
+      "targets": [
+        "effect",
+        "action"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "item",
+      "field": "equipEffects",
+      "targets": [
+        "effect",
+        "action"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "item",
+      "field": "appearance.atlas",
+      "targets": [
+        "sprite_atlas"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "item",
+      "field": "economy.currency",
+      "targets": [
+        "item"
+      ],
+      "cardinality": "0..1",
+      "crossPack": true
+    },
+    {
+      "type": "ability",
+      "field": "effects",
+      "targets": [
+        "effect"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "ability",
+      "field": "actions",
+      "targets": [
+        "action"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "loot_table",
+      "field": "entries.item",
+      "targets": [
+        "item"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "spawn",
+      "field": "targets",
+      "targets": [
+        "npc",
+        "item"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "progression_tree",
+      "field": "nodes.ability",
+      "targets": [
+        "ability"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "progression_tree",
+      "field": "nodes.requires",
+      "targets": [
+        "node"
+      ],
+      "list": true,
+      "localRef": true,
+      "acyclic": true
+    },
+    {
+      "type": "quest",
+      "field": "prerequisites",
+      "targets": [
+        "quest"
+      ],
+      "list": true,
+      "crossPack": true,
+      "acyclic": true
+    },
+    {
+      "type": "quest",
+      "field": "rewards.items",
+      "targets": [
+        "item"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "dialog",
+      "field": "nodes.actions",
+      "targets": [
+        "quest",
+        "dialog",
+        "effect"
+      ],
+      "list": true,
+      "crossPack": true
+    }
+  ]
+}

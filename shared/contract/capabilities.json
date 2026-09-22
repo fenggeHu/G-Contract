@@ -1,6 +1,6 @@
 {
   "engine": "0.2.0",
-  "schema": "1.5",
+  "schema": "1.6",
   "schemaSupported": ["1"],
   "capabilities": [
     { "name": "world.stream", "version": "1.0", "status": "enabled" },
@@ -47,6 +47,12 @@
     { "name": "telemetry.event", "version": "1.0", "status": "enabled" },
     { "name": "config.flag", "version": "1.0", "status": "enabled" },
     { "name": "conditions.core", "version": "1.0", "status": "enabled" },
-    { "name": "spatial.query", "version": "1.0", "status": "enabled" }
+    { "name": "spatial.query", "version": "1.0", "status": "enabled" },
+    { "name": "progression.tree", "version": "1.0", "status": "enabled" },
+    { "name": "action.core", "version": "1.0", "status": "enabled" },
+    { "name": "loot.core", "version": "1.0", "status": "enabled" },
+    { "name": "item.traits", "version": "1.0", "status": "enabled" },
+    { "name": "inventory.core", "version": "1.0", "status": "enabled" },
+    { "name": "vendor.core", "version": "1.0", "status": "enabled" }
   ]
 }

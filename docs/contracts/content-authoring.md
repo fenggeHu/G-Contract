@@ -40,7 +40,8 @@ PUT    /api/content/scene/{id}
 
 ## 3. Relations registry
 
-- `shared/model/relations-1.0.json` declares, per Def field, the target type, cardinality, and cross-pack rules.
+- `shared/model/relations-1.1.json` declares, per Def field, the target type(s), cardinality, cross-pack rules, intra-Def refs (`localRef`) and acyclicity (`acyclic`).
+- **v2** (schema 1.6): `targets[]` is a union (`effect|action`, `npc|item`); `field` is a dot path with array expansion (`nodes.requires`, `entries.item`); a value is valid if it resolves in **any** target type. See ADR-0012.
 - **Single source**: authored under `G_Engine/App/engine/sdk/`, emitted to `G_Shared` by `content sync`.
 - Consumed by both Content Studio (graph/navigation) and the validator (referential integrity).
 - Must be defined **before** Studio implementation (P0 ordering).

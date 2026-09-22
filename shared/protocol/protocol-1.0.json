@@ -3,35 +3,257 @@
   "proto": 1,
   "transport": "nakama-json",
   "messages": [
-    { "t": "input", "dir": "c2s", "opcode": 1,
-      "fields": [ { "name": "dx", "type": "float" }, { "name": "dy", "type": "float" } ] },
-    { "t": "attack", "dir": "c2s", "opcode": 1, "fields": [] },
-    { "t": "cast", "dir": "c2s", "opcode": 1,
-      "fields": [ { "name": "ability", "type": "string" }, { "name": "target", "type": "string" } ] },
-    { "t": "welcome", "dir": "s2c", "opcode": 1,
-      "fields": [ { "name": "id", "type": "string" }, { "name": "mode", "type": "string" },
-                  { "name": "tick", "type": "int" }, { "name": "proto", "type": "int" },
-                  { "name": "arena", "type": "object" } ] },
-    { "t": "snapshot", "dir": "s2c", "opcode": 1,
-      "fields": [ { "name": "proto", "type": "int" }, { "name": "mode", "type": "string" },
-                  { "name": "tick", "type": "int" }, { "name": "players", "type": "object" },
-                  { "name": "enemy", "type": "object" } ] },
-    { "t": "world_welcome", "dir": "s2c", "opcode": 1,
-      "fields": [ { "name": "id", "type": "string" }, { "name": "world_id", "type": "string" },
-                  { "name": "mode", "type": "string" }, { "name": "tick", "type": "int" },
-                  { "name": "tick_rate", "type": "int" }, { "name": "proto", "type": "int" },
-                  { "name": "spawn", "type": "object" }, { "name": "revision", "type": "string" } ] },
-    { "t": "world_snapshot", "dir": "s2c", "opcode": 1,
-      "fields": [ { "name": "proto", "type": "int" }, { "name": "world_id", "type": "string" },
-                  { "name": "tick", "type": "int" }, { "name": "players", "type": "object" },
-                  { "name": "enter", "type": "array" }, { "name": "leave", "type": "array" } ] }
+    {
+      "t": "input",
+      "dir": "c2s",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "dx",
+          "type": "float"
+        },
+        {
+          "name": "dy",
+          "type": "float"
+        }
+      ]
+    },
+    {
+      "t": "attack",
+      "dir": "c2s",
+      "opcode": 1,
+      "fields": []
+    },
+    {
+      "t": "cast",
+      "dir": "c2s",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "ability",
+          "type": "string"
+        },
+        {
+          "name": "target",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "t": "welcome",
+      "dir": "s2c",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        },
+        {
+          "name": "tick",
+          "type": "int"
+        },
+        {
+          "name": "proto",
+          "type": "int"
+        },
+        {
+          "name": "arena",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "t": "snapshot",
+      "dir": "s2c",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "proto",
+          "type": "int"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        },
+        {
+          "name": "tick",
+          "type": "int"
+        },
+        {
+          "name": "players",
+          "type": "object"
+        },
+        {
+          "name": "enemy",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "t": "world_welcome",
+      "dir": "s2c",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "world_id",
+          "type": "string"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        },
+        {
+          "name": "tick",
+          "type": "int"
+        },
+        {
+          "name": "tick_rate",
+          "type": "int"
+        },
+        {
+          "name": "proto",
+          "type": "int"
+        },
+        {
+          "name": "spawn",
+          "type": "object"
+        },
+        {
+          "name": "revision",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "t": "world_snapshot",
+      "dir": "s2c",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "proto",
+          "type": "int"
+        },
+        {
+          "name": "world_id",
+          "type": "string"
+        },
+        {
+          "name": "tick",
+          "type": "int"
+        },
+        {
+          "name": "players",
+          "type": "object"
+        },
+        {
+          "name": "enter",
+          "type": "array"
+        },
+        {
+          "name": "leave",
+          "type": "array"
+        }
+      ]
+    }
   ],
   "rpc": [
-    { "name": "create_match", "in": ["mode", "max_players", "respawn_seconds", "score_target", "time_limit", "arena", "combat"] },
-    { "name": "enter_world", "in": ["prefer_poi", "presence_meta"] },
-    { "name": "leave_world", "in": [] },
-    { "name": "instance_enter", "in": ["mode", "params"] },
-    { "name": "instance_exit", "in": [] },
-    { "name": "appearance_get", "in": ["user_id", "species"] }
+    {
+      "name": "create_match",
+      "in": [
+        "mode",
+        "max_players",
+        "respawn_seconds",
+        "score_target",
+        "time_limit",
+        "arena",
+        "combat"
+      ]
+    },
+    {
+      "name": "enter_world",
+      "in": [
+        "prefer_poi",
+        "presence_meta"
+      ]
+    },
+    {
+      "name": "leave_world",
+      "in": []
+    },
+    {
+      "name": "instance_enter",
+      "in": [
+        "mode",
+        "params"
+      ]
+    },
+    {
+      "name": "instance_exit",
+      "in": []
+    },
+    {
+      "name": "appearance_get",
+      "in": [
+        "user_id",
+        "species"
+      ]
+    },
+    {
+      "name": "loot_roll",
+      "in": [
+        "table",
+        "seed",
+        "idempotency_key"
+      ]
+    },
+    {
+      "name": "vendor_buy",
+      "in": [
+        "npc",
+        "item",
+        "count",
+        "price",
+        "currency",
+        "required_rep",
+        "capacity",
+        "idempotency_key"
+      ]
+    },
+    {
+      "name": "vendor_sell",
+      "in": [
+        "npc",
+        "item",
+        "count",
+        "price",
+        "currency",
+        "capacity",
+        "idempotency_key"
+      ]
+    },
+    {
+      "name": "progression_unlock",
+      "in": [
+        "tree_id",
+        "tree",
+        "node",
+        "idempotency_key"
+      ]
+    },
+    {
+      "name": "progression_reset",
+      "in": [
+        "tree_id",
+        "idempotency_key"
+      ]
+    }
   ]
 }

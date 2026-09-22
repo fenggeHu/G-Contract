@@ -4,7 +4,7 @@
   "properties": {
     "defs": {
       "type": "array",
-      "items": { "$ref": "content-1.5.json#/$defs/def" }
+      "items": { "$ref": "content-1.6.json#/$defs/def" }
     }
   }
 }
