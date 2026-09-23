@@ -148,13 +148,59 @@
           "$ref": "#/$defs/ref"
         },
         "zones": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "labelKey": {
+                "type": "string"
+              },
+              "biome": {
+                "$ref": "#/$defs/ref"
+              },
+              "rect": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "w": {
+                    "type": "number"
+                  },
+                  "h": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
         },
         "route": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          }
         },
         "overrides": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
         },
         "defaultLighting": {
           "$ref": "#/$defs/ref"
@@ -329,13 +375,63 @@
           "type": "string"
         },
         "regions": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         },
         "objects": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "def": {
+                "$ref": "#/$defs/ref"
+              },
+              "pos": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  }
+                }
+              },
+              "altitude": {
+                "type": "number"
+              },
+              "rot": {
+                "type": "number"
+              }
+            }
+          }
         },
         "entryPoints": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "pos": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  }
+                }
+              },
+              "altitude": {
+                "type": "number"
+              }
+            }
+          }
         },
         "lighting": {
           "$ref": "#/$defs/ref"
@@ -494,7 +590,10 @@
           ]
         },
         "abilities": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         },
         "behavior": {
           "type": "string"
@@ -593,7 +692,10 @@
           "type": "number"
         },
         "grantsAbility": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         },
         "quality": {
           "type": "string",
@@ -609,10 +711,16 @@
           "type": "string"
         },
         "allowedClasses": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "allowedRaces": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "combat": {
           "type": "object"
@@ -668,13 +776,53 @@
           "description": "durationMs/refreshOnTrade"
         },
         "affixes": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
         },
         "onUseEffects": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ref"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "type": "object"
+                  }
+                }
+              }
+            ]
+          }
         },
         "equipEffects": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ref"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "type": "object"
+                  }
+                }
+              }
+            ]
+          }
         },
         "durability": {
           "type": "integer",
@@ -710,11 +858,53 @@
           "type": "number"
         },
         "conditions": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "quest": {
+              "$ref": "#/$defs/ref"
+            },
+            "not": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
         "actions": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string"
+              },
+              "scene": {
+                "type": "string"
+              },
+              "entry": {
+                "type": "string"
+              },
+              "quest": {
+                "$ref": "#/$defs/ref"
+              },
+              "ability": {
+                "$ref": "#/$defs/ref"
+              },
+              "item": {
+                "$ref": "#/$defs/ref"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "next": {
+                "type": "string"
+              },
+              "dialog": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
@@ -740,16 +930,38 @@
           "type": "boolean"
         },
         "targets": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         },
         "count": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "min": {
+              "type": "integer"
+            },
+            "max": {
+              "type": "integer"
+            }
+          }
         },
         "area": {
           "$ref": "#/$defs/ref"
         },
         "conditions": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "quest": {
+              "$ref": "#/$defs/ref"
+            },
+            "not": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
         "respawnMs": {
           "type": "integer"
@@ -778,14 +990,66 @@
           "type": "boolean"
         },
         "base": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "hp": {
+              "type": "number"
+            },
+            "attack": {
+              "type": "number"
+            },
+            "defense": {
+              "type": "number"
+            },
+            "moveSpeed": {
+              "type": "number"
+            }
+          }
         },
         "modifiers": {
           "type": "array",
-          "description": "{stat,op,value,source?,durationMs?,priority?}"
+          "description": "{stat,op,value,source?,durationMs?,priority?}",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stat": {
+                "type": "string"
+              },
+              "op": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "source": {
+                "type": "string"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "priority": {
+                "type": "integer"
+              }
+            }
+          }
         },
         "resources": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "max": {
+                "type": "number"
+              },
+              "regenPerSec": {
+                "type": "number"
+              }
+            }
+          }
         },
         "xp": {
           "type": "integer",
@@ -795,7 +1059,27 @@
         "loot": {
           "type": "array",
           "deprecated": true,
-          "description": "deprecated: 迁往 loot_table"
+          "description": "deprecated: 迁往 loot_table",
+          "items": {
+            "type": "object",
+            "properties": {
+              "item": {
+                "$ref": "#/$defs/ref"
+              },
+              "chance": {
+                "type": "number"
+              },
+              "min": {
+                "type": "integer"
+              },
+              "max": {
+                "type": "integer"
+              },
+              "weight": {
+                "type": "number"
+              }
+            }
+          }
         }
       }
     },
@@ -824,7 +1108,16 @@
           "type": "string"
         },
         "cost": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "resource": {
+              "type": "string"
+            },
+            "amount": {
+              "type": "number"
+            }
+          }
         },
         "cooldownMs": {
           "type": "integer"
@@ -850,7 +1143,10 @@
           ]
         },
         "effects": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         },
         "script": {
           "type": "string"
@@ -870,7 +1166,25 @@
           "type": "integer"
         },
         "actions": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ref"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string"
+                  },
+                  "params": {
+                    "type": "object"
+                  }
+                }
+              }
+            ]
+          }
         },
         "coneAngleDeg": {
           "type": "number",
@@ -937,7 +1251,30 @@
           "type": "number"
         },
         "statModifiers": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stat": {
+                "type": "string"
+              },
+              "op": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "source": {
+                "type": "string"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "priority": {
+                "type": "integer"
+              }
+            }
+          }
         },
         "durationMs": {
           "type": "integer"
@@ -955,7 +1292,10 @@
           ]
         },
         "tags": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "school": {
           "type": "string"
@@ -1021,16 +1361,54 @@
           "type": "string"
         },
         "objectives": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "count": {
+                "type": "integer"
+              },
+              "item": {
+                "$ref": "#/$defs/ref"
+              },
+              "npc": {
+                "$ref": "#/$defs/ref"
+              }
+            }
+          }
         },
         "states": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "rewards": {
-          "type": "object"
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ref"
+              }
+            },
+            "xp": {
+              "type": "integer"
+            }
+          }
         },
         "prerequisites": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         },
         "onComplete": {
           "type": "string"
@@ -1062,7 +1440,61 @@
           "type": "string"
         },
         "nodes": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "speaker": {
+                "type": "string"
+              },
+              "textKey": {
+                "type": "string"
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "textKey": {
+                      "type": "string"
+                    },
+                    "next": {
+                      "type": "string"
+                    },
+                    "actions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "op": {
+                            "type": "string"
+                          },
+                          "quest": {
+                            "$ref": "#/$defs/ref"
+                          },
+                          "ability": {
+                            "$ref": "#/$defs/ref"
+                          },
+                          "item": {
+                            "$ref": "#/$defs/ref"
+                          },
+                          "count": {
+                            "type": "integer"
+                          },
+                          "next": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -1097,10 +1529,22 @@
           "type": "number"
         },
         "walkable": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
         },
         "altitude": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
         }
       }
     },
@@ -1379,7 +1823,10 @@
           "type": "string"
         },
         "slots": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1408,7 +1855,10 @@
           "type": "string"
         },
         "assets": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "bus": {
           "enum": [
@@ -1422,7 +1872,10 @@
           "type": "number"
         },
         "pitchRange": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
         },
         "loop": {
           "type": "boolean"
@@ -1499,7 +1952,19 @@
         },
         "ops": {
           "type": "array",
-          "minItems": 1
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "value": {}
+            }
+          }
         }
       }
     },
@@ -1564,7 +2029,10 @@
                 "type": "number"
               },
               "options": {
-                "type": "array"
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               "part": {
                 "type": "string"
@@ -1755,7 +2223,10 @@
           "type": "integer"
         },
         "slots": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1824,7 +2295,27 @@
           "type": "string"
         },
         "entries": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "item": {
+                "$ref": "#/$defs/ref"
+              },
+              "chance": {
+                "type": "number"
+              },
+              "min": {
+                "type": "integer"
+              },
+              "max": {
+                "type": "integer"
+              },
+              "weight": {
+                "type": "number"
+              }
+            }
+          }
         },
         "guarantee": {
           "type": "object"
@@ -1859,13 +2350,70 @@
           "type": "object"
         },
         "tiers": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer"
+              },
+              "requiresNodes": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
         },
         "nodes": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "tier": {
+                "type": "integer"
+              },
+              "cost": {
+                "type": "integer"
+              },
+              "requires": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ref"
+                }
+              },
+              "ability": {
+                "$ref": "#/$defs/ref"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
         },
         "presets": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "nodes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ref"
+                }
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }

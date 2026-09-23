@@ -233,8 +233,7 @@
       "type": "spawn",
       "field": "targets",
       "targets": [
-        "npc",
-        "item"
+        "stats"
       ],
       "list": true,
       "crossPack": true

@@ -1,7 +1,7 @@
 # Contract: Engine SDK
 
 - Status: Active
-- Updated: 2026-09-20
+- Updated: 2026-09-23
 
 > The **sole interface** the engine team provides to the content layer. Changes follow the compatibility policy in architecture overview.
 > **Scope**: pre-research implements only "enabled capabilities"; the rest are marked "deferred". See pre-research scope.
@@ -95,7 +95,8 @@ SceneManager.to_menu() ; go(path, entry?) ; consume_pending()
 SceneManager.to_world(entry := "", poi_id := "") -> void   # Return to world (content does not reference main/ paths)
 # UI
 UI.hud(parent) -> Node                             # Mount generic HUD (content does not reference res://ui)
-UI.touch_controls(parent) -> Node                  # Mount touch layer on touch devices (joystick→ui_*, button→ui_accept; #43)
+UI.touch_controls(parent, mode := 0) -> Node        # Mount touch layer on touch devices (joystick→ui_*, button→ui_accept; #43)
+                                                   # mode: 0=FLYING 1=GROUND 2=COMBAT — gates which buttons may show
 # World (engine generic scene engine/runtime/world/world_scene.tscn, driven by world Def)
 WorldStream.configure(world_def) ; world_to_px(m) ; px_to_world(px) ; chunks
 FlightPlayer.speed_px / auto / touch_dir             # Flight movement (auto/touch/keyboard)
@@ -135,7 +136,9 @@ BenchReplay.load_replay(path) ; enabled / duration / loop      # target in group
 # Camera (camera.control)
 FollowCamera.target / smooth / rotate_with_target / free_rotation / set_zoom_level(z) / zoom_by(d) / rotate_by(dyaw) / shake(strength)
 # Touch input (ui/touch_controls.tscn)
-TouchControls.move(dir) / land_pressed ; set_land_available(v) ; TouchJoystick.calc(center, point, radius)
+TouchControls.move(dir) / accept_pressed / land_pressed ; TouchJoystick.calc(center, point, radius)
+TouchControls.set_mode(m) / set_accept_available(v) / set_land_available(v)
+                                                   # visibility = content switch AND mode (FLYING: no primary)
 # Combat
 Combat.stats(def_id) ; item_stats(item_id) ; ability_cost(ability_id)   # ability.cost {resource, amount}
 Combat.damage(src, tgt, effect_id) ; apply_damage(rt, dmg, source_id)
