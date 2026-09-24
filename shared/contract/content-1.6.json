@@ -374,6 +374,14 @@
         "terrain": {
           "type": "string"
         },
+        "layout": {
+          "type": "string",
+          "description": "Optional generated layout JSON relative to the pack."
+        },
+        "runtime": {
+          "enum": ["town", "combat", "generic"],
+          "description": "Platform scene executor selected by content data."
+        },
         "regions": {
           "type": "array",
           "items": {
