@@ -11,6 +11,7 @@
     { "name": "effect.apply", "version": "1.0", "status": "enabled" },
     { "name": "effect.aura", "version": "1.0", "status": "enabled" },
     { "name": "combat.timeline", "version": "1.0", "status": "enabled" },
+    { "name": "combat.authority", "version": "1.0", "status": "enabled", "serverEffects": ["damage", "heal"], "targeting": ["single"], "resolution": "instant", "deferred": ["projectile", "castDelay", "aura", "actions", "summon", "cone", "line", "multiTarget"] },
     { "name": "ability.grant", "version": "1.0", "status": "enabled" },
     { "name": "camera.control", "version": "1.0", "status": "enabled" },
     { "name": "input.action", "version": "1.0", "status": "enabled" },

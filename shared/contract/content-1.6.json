@@ -549,6 +549,25 @@
         }
       }
     },
+    "encounter": {
+      "type": "object",
+      "required": ["type", "id", "mode", "playerStats", "enemy", "abilities", "arena"],
+      "properties": {
+        "type": { "const": "encounter" },
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string" },
+        "mode": { "enum": ["pve", "pvp"] },
+        "playerStats": { "$ref": "#/$defs/ref" },
+        "enemy": { "$ref": "#/$defs/ref" },
+        "abilities": { "type": "array", "items": { "$ref": "#/$defs/ref" } },
+        "arena": { "type": "object", "required": ["w", "h"], "properties": { "w": { "type": "number" }, "h": { "type": "number" } } },
+        "maxPlayers": { "type": "integer" },
+        "respawnSeconds": { "type": "number" },
+        "scoreTarget": { "type": "integer" },
+        "timeLimit": { "type": "number" },
+        "aoi": { "type": "object" }
+      }
+    },
     "npc": {
       "type": "object",
       "required": [
@@ -2137,6 +2156,9 @@
         },
         {
           "$ref": "#/$defs/npc"
+        },
+        {
+          "$ref": "#/$defs/encounter"
         },
         {
           "$ref": "#/$defs/item"

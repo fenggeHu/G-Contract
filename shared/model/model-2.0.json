@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "note": "对局模型 v2（平台/内容分离整改 M0）。在 model-1.0 基础上补齐对局投影类型：CombatProjection / AbilityProjection / EntityState。投影即最终数值：player.attack/defense 为客户端预结算（含光环修正）的 effective 值，服务端不重算（见整改方案 14.4.4）。",
+  "note": "对局模型 v2（平台/内容分离整改 M0）。CombatProjection 由服务端根据已发布 pack/encounter 构造；客户端不得提交或覆盖权威数值。",
   "components": [
     "transform",
     "movement",
@@ -39,6 +39,13 @@
     "pack": "string",
     "id": "string"
   },
+  "contentPackRef": {
+    "pack": "string",
+    "packVersion": "string",
+    "encounter": "string",
+    "mode": "string",
+    "options": "object"
+  },
   "combatProjection": {
     "mode": "string",
     "player": {
@@ -67,6 +74,10 @@
       }
     }
   },
+  "resourceProjection": {
+    "max": "number",
+    "regenPerSec": "number"
+  },
   "abilityProjection": {
     "cooldownMs": "number",
     "cooldownGroup": "string",
@@ -90,5 +101,15 @@
     "max_hp",
     "dead",
     "res"
-  ]
+  ],
+  "abilityState": {
+    "readyTick": "int",
+    "groupReadyTick": "int"
+  },
+  "castResult": {
+    "seq": "int",
+    "ability": "string",
+    "accepted": "boolean",
+    "reason": "string"
+  }
 }

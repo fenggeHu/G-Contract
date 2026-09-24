@@ -60,7 +60,8 @@
 | `render.post` | 1.0 | `autoload/render.gd` | Post-processing (glow/adjustment) configuration |
 | `entity.spawn` | 1.0 | `autoload/entities.gd` | Runtime entity registration (Def→runtime state; event `entity_spawned`) |
 | `entity.query` | 1.0 | `autoload/entities.gd` | Entity queries (by def/type/alive/in range; `entity_despawned`) |
-| `combat.timeline` | 1.0 | `autoload/combat.gd` | Ability timeline: castMs/cooldown/cooldown group/range validation + effect resolution; multi-target `cone`/`line` (candidates), `summon` effect |
+| `combat.timeline` | 1.0 | `autoload/combat.gd` | Offline ability simulation and presentation. Online authoritative matches are limited by `combat.authority`; unsupported timeline features must not be treated as server-resolved. |
+| `combat.authority` | 1.0 | `NetClient` + `G_Server` | Server-authoritative damage/heal, cooldown, resource cost, single-target instant resolution; deferred features are rejected at match creation. |
 | `ability.grant` | 1.0 | `autoload/player.gd` | Abilities granted by equipped items (`item.grantsAbility`), active while equipped |
 | `progression.tree` | 1.0 | `autoload/progression.gd` | Talent/skill tree: tiers/requires/points; grants & revokes abilities (`source=progression`) |
 | `action.core` | 1.0 | `autoload/actions.gd` | Generic actions (`action` Def): learn_ability/teleport/give/grant_items/consume/destroy/pick_up; `item.onUseEffects` / `item.equipEffects` (action entries) / `ability.actions` |
@@ -156,7 +157,7 @@ SaveService.save_local/load_local ; save_cloud/load_cloud ; autosave
 # Network (net.client)
 NetClient.connect_to() ; join() ; send_input(dx, dy) ; attack()
 NetClient.enter_world(prefer_poi?) ; leave_world() ; appearance_get(user_id, species)  # 持久世界房间 + 服务端权威出生点
-NetClient.enter_instance(mode, params, location) ; exit_instance()   # 跨权威切换（世界↔副本）；事件 instance_enter/exit
+NetClient.enter_instance(pack, encounter, mode, options, location) ; exit_instance()   # 跨权威切换（世界↔副本）；服务端按已发布 pack/encounter 构造权威投影；事件 instance_enter/exit
 NetClient.submit_score/top_scores ; add_friend_by_username/list_friends ; create_party
 NetClient.cloud_save_write/cloud_save_read  # 经 RPC save_write/save_read；CAS + server wins（save-schema.md §9）
 # Audio (audio.play/music/mixer)

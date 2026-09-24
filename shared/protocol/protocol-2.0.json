@@ -97,6 +97,33 @@
         {
           "name": "abilities",
           "type": "object"
+        },
+        {
+          "name": "result",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "t": "cast_result",
+      "dir": "s2c",
+      "opcode": 1,
+      "fields": [
+        {
+          "name": "seq",
+          "type": "int"
+        },
+        {
+          "name": "ability",
+          "type": "string"
+        },
+        {
+          "name": "accepted",
+          "type": "bool"
+        },
+        {
+          "name": "reason",
+          "type": "string"
         }
       ]
     },
@@ -198,8 +225,11 @@
     {
       "name": "instance_enter",
       "in": [
+        "pack",
+        "packVersion",
+        "encounter",
         "mode",
-        "params"
+        "options"
       ]
     },
     {

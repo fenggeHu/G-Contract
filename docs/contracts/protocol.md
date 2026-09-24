@@ -81,7 +81,7 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 | `save_write` | `{snapshot, expected_revision}` | `{ok, revision, snapshot}` or `{ok:false, err:"conflict", revision, snapshot}` | Server-authoritative cloud write (CAS); on mismatch returns the server snapshot (**server wins**). See [save-schema.md](save-schema.md) §9 |
 | `enter_world` | `{prefer_poi?, presence_meta?}` | `{ok, world_id, match_id, proto, spawn:{poi_id,x,y,altitude}, revision}` | Enter the **persistent world** room (creates/ensures the singleton world match); the server resolves the authoritative spawn from the cloud save `player.location`, else the content projection `presence_meta` (`default_entry` / `pois`) |
 | `leave_world` | `{}` | `{ok}` | Mark the caller as leaving the world (cross-authority switch / logout) |
-| `instance_enter` | `{mode, params?}` | `{ok, match_id, mode}` | Cross-authority switch world → instance: creates the instance match; the client leaves the world presence and joins it |
+| `instance_enter` | `{pack, packVersion?, encounter, mode, options?}` | `{ok, match_id, mode}` or `{ok:false, err, field?}` | Cross-authority switch world → instance. The client selects a published content pack and encounter; the server loads the authoritative projection and creates the instance match. |
 | `instance_exit` | `{}` | `{ok}` | Cross-authority switch instance → world: the client leaves the instance and re-enters the world (`enter_world`) |
 | `appearance_get` | `{user_id, species}` | `{ok, species, params}` or `{ok:false, err:"not_found"}` | Fetch a player's full appearance params for replication (by entity `id` + `species`; bounded cache; see §8 appearance) |
 | `loot_roll` | `{table:{...}, seed?, idempotency_key?}` | `{ok, seed, roll_id, drops:[{item,count}]}` | **Server-authoritative** loot: the server picks the seed and evaluates the `loot_table` projection (content rules), returning the drops the client must adopt |
@@ -94,7 +94,8 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 
 - `pvp` optional parameters: `max_players` (default 4) · `respawn_seconds` (default 3) · `score_target` (first to reach wins, 0 = unlimited) · `time_limit` (tick limit, 0 = unlimited) · `arena{w,h}` (coordinate bounds).
 - `aoi` (optional, **AOI targeted broadcast**): `{ enabled?, cell, radius, hysteresis?, maxRadius? }` (units match `arena` = pixels; `radius` is clamped by `maxRadius`, and the **lower bound = engagement distance** (the maximum ability `range` in the `RANGE`/`combat` projection, preventing "invisible attackers"); providing it enables it, `enabled:false` explicitly disables it). **Disabled by default**; recommended to enable at the world layer.
-- `combat` (optional, generic combat projection): `{ abilities: { <abilityId>: { cooldownMs, range, multiplier, cooldownGroup?, cost? } }, attack, defense, resources? }`. `cost = {resource, amount}` and `resources = { <id>: {max, regenPerSec?} }` make the server authoritative for resource spend/regen (CR-02): insufficient cost rejects the cast; resources regen per tick; current values are in `snapshot.players[].res`. **Damage semantics (CR-08):** `damage = max(1, floor(attack * multiplier - defense))`, identical to the client offline formula (`Combat.damage`). Legacy `abilities[id].damage` (absolute) is still accepted when `multiplier` is absent. Produced by content (rules/values are in the content layer); the server uses it to **authoritatively resolve** `cast`, contains no gameplay values and no per-content code. Clients can use `NetClient.build_combat_data()` to generate it from Defs.
+- `combat` is a **server-generated projection**, not an `instance_enter` client input. Its internal shape is `{player, enemy, abilities, resources}` and is constructed from the published pack/encounter Defs. The client must never submit or override `attack`, `defense`, HP, speed, range, ability damage/multiplier, enemy values, arena values, or resource limits. Offline simulation may build a local projection for tests, but that projection is not an online authority input.
+- `instance_enter` request whitelist: `pack` (required published pack id), `packVersion` (optional compatible version), `encounter` (required encounter id), `mode` (required registered mode), `options` (optional non-authoritative player choices). Unknown fields and authority fields such as `params`, `combat`, `arena`, `enemy` and `abilities` must be rejected with a structured error.
 - Teams: the client's join metadata carries `team`; without `team` it is FFA (all hostile).
 
 ### Match state
@@ -104,14 +105,15 @@ Transport: **Nakama built-in Realtime match state** (JSON objects), with `t` as 
 | C→S | `input` | `dx`, `dy` (-1..1, server clamps) | ✅ |
 | C→S | `attack` | — (fixed-constant extra mechanic; compatibility path when there is no `combat` projection) | ✅ |
 | C→S | `cast` | `ability` (content ability id), `target` (optional entity id) | ✅ |
-| S→C | `snapshot` | `proto`, `mode`, `tick`, `players{}`, (`pve` includes `enemy{}`); when AOI is enabled it **only includes entities within that player's area of interest radius**, along with `enter[]`/`leave[]` deltas | ✅ |
-| S→C | `welcome` | `id`, `mode`, `tick`, `proto`, `arena` | ✅ |
+| S→C | `snapshot` | `proto`, `mode`, `tick`, `players{}` (including authoritative `hp/max_hp/dead/res`), optional `enemy{}`, `abilities{}`, `result{}`; when AOI is enabled it **only includes entities within that player's area of interest radius**, along with `enter[]`/`leave[]` deltas | ✅ |
+| S→C | `cast_result` | `seq`, `ability`, `accepted`, `reason` | M0 contract; server integration in M1 |
+| S→C | `welcome` | `id`, `mode`, `tick`, `proto`, `arena`, `modeRegistryVersion` | ✅ |
 
 **AOI (area-of-interest culling)**: when `aoi.enabled`, the server broadcasts to each presence only the entities within its radius (grid `aoi.lua`) and provides `enter`/`leave` deltas; **hysteresis**: entering requires `d ≤ radius`, while **retention** allows `d ≤ radius×(1+hysteresis)` (eliminating boundary jitter); **only broadcast is culled, not simulation**, and interacting parties (attacker/target/victim) always reach each other.
 
 **Join rejection**: match full → `match_full`; version mismatch → `proto_mismatch` (Nakama join returns failure; the client emits the `match_join_failed(reason)` signal).
 
-**Version negotiation (handshake)**: `proto` is the match protocol version (currently `1`). The client's `join metadata` carries `{"proto": <n>}`; the server rejects on mismatch in `match_join_attempt` (`proto_mismatch`) and allows it when not provided (compatible with old clients). Both `welcome` / `snapshot` return `proto`; the client errors if validation does not match.
+**Version negotiation (handshake)**: `proto` is the match protocol version (currently `2`). The client's `join metadata` carries `{"proto": <n>}`; the server rejects on mismatch in `match_join_attempt` (`proto_mismatch`). Both `welcome` / `snapshot` return `proto`; the client errors if validation does not match. World presence keeps its separately versioned world protocol.
 
 Entity fields: `id` · `x` · `y` · `hp` · `max_hp` · `dead`; `pvp` additionally includes `team` · `kills` · `deaths` · `respawn_at`.
 **Server authority**: HP/damage/respawn/win-loss are resolved by the server (online-and-instances.md):
