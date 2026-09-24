@@ -1,0 +1,94 @@
+{
+  "version": "2.0",
+  "note": "对局模型 v2（平台/内容分离整改 M0）。在 model-1.0 基础上补齐对局投影类型：CombatProjection / AbilityProjection / EntityState。投影即最终数值：player.attack/defense 为客户端预结算（含光环修正）的 effective 值，服务端不重算（见整改方案 14.4.4）。",
+  "components": [
+    "transform",
+    "movement",
+    "appearance",
+    "presence",
+    "social",
+    "replicable",
+    "combat"
+  ],
+  "entityFields": [
+    "id",
+    "x",
+    "y",
+    "hp",
+    "max_hp",
+    "dead"
+  ],
+  "pvpFields": [
+    "team",
+    "kills",
+    "deaths",
+    "respawn_at"
+  ],
+  "appearanceFields": [
+    "species",
+    "akey"
+  ],
+  "locationFields": [
+    "world_id",
+    "poi_id",
+    "x",
+    "y",
+    "altitude"
+  ],
+  "defRef": {
+    "pack": "string",
+    "id": "string"
+  },
+  "combatProjection": {
+    "mode": "string",
+    "player": {
+      "speed": "number",
+      "hp": "number",
+      "maxHp": "number",
+      "attack": "number",
+      "defense": "number",
+      "range": "number"
+    },
+    "enemy": {
+      "speed": "number",
+      "hp": "number",
+      "attack": "number",
+      "defense": "number",
+      "range": "number",
+      "cooldownMs": "number"
+    },
+    "abilities": {
+      "<ability_id>": "AbilityProjection"
+    },
+    "resources": {
+      "<resource_id>": {
+        "max": "number",
+        "regenPerSec": "number"
+      }
+    }
+  },
+  "abilityProjection": {
+    "cooldownMs": "number",
+    "cooldownGroup": "string",
+    "range": "number",
+    "damage": "number",
+    "multiplier": "number",
+    "cost": {
+      "resource": "string",
+      "amount": "number"
+    },
+    "effects": [
+      "damage",
+      "heal"
+    ]
+  },
+  "entityState": [
+    "id",
+    "x",
+    "y",
+    "hp",
+    "max_hp",
+    "dead",
+    "res"
+  ]
+}

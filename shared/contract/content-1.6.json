@@ -632,6 +632,10 @@
         },
         "variance": {
           "type": "number"
+        },
+        "sprite": {
+          "type": "string",
+          "description": "NPC 表现精灵引用（sprite key / atlas 条目）。引擎据此渲染场景 NPC；缺省回退场景默认。内容方在 Def 提供，平台不内置。"
         }
       }
     },
@@ -905,6 +909,10 @@
               }
             }
           }
+        },
+        "sprite": {
+          "type": "string",
+          "description": "交互物表现精灵引用（sprite key / atlas 条目）。引擎据此渲染场景交互物；缺省回退场景默认。"
         }
       }
     },
