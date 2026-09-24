@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "formula": "max(1, floor(attack * multiplier - defense))",
+  "cases": [
+    { "name": "absolute_damage", "attack": 11, "multiplier": 1, "defense": 0, "expected": 11 },
+    { "name": "defense_reduction", "attack": 5, "multiplier": 1, "defense": 3, "expected": 2 },
+    { "name": "minimum_damage", "attack": 1, "multiplier": 1, "defense": 5, "expected": 1 },
+    { "name": "fractional_multiplier", "attack": 11, "multiplier": 1.5, "defense": 4, "expected": 12 }
+  ]
+}
