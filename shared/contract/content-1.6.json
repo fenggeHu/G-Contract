@@ -567,6 +567,7 @@
         "mode": { "enum": ["pve", "pvp"] },
         "playerStats": { "$ref": "#/$defs/ref" },
         "enemy": { "$ref": "#/$defs/ref" },
+        "enemySpawn": { "type": "object", "properties": { "x": { "type": "number" }, "y": { "type": "number" } } },
         "abilities": { "type": "array", "items": { "$ref": "#/$defs/ref" } },
         "arena": { "type": "object", "required": ["w", "h"], "properties": { "w": { "type": "number" }, "h": { "type": "number" } } },
         "maxPlayers": { "type": "integer" },
