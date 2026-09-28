@@ -21,7 +21,7 @@
   "labelKey": "CITY_IRONHOLD", "worldPos": { "x": 2410, "y": 1180 } }
 ```
 
-- `abstract: true` is not stored, it only serves as a parent; `parent` references by `id` (1.6) with a `name` fallback (dual-read, ADR-0012).
+- `abstract: true` is not stored, it only serves as a parent; `parent` references by `id` with compatibility behavior defined by the active schema version.
 - Children override parent fields of the same name; arrays are **replaced** by default (`mergeMode: "append"` switches to append).
 
 ### 0.2 Patch (differential override)
@@ -143,7 +143,7 @@ See [content-package.md](content-package.md).
 |---|---|---|---|
 | `species` | reference | Yes | Appearance/species |
 | `faction` | reference | No | Faction |
-| `stats` | object | No | Stats (§13)（与 `item.stats` 一致；统一为 `stats` Def 引用的提案见 data-model-review §3） |
+| `stats` | object | No | Stats (§13) |
 | `abilities[]` | reference | No | Abilities (§14) |
 | `behavior` | reference | No | Behavior script |
 | `dialog` | reference | No | Dialog tree (§18) |

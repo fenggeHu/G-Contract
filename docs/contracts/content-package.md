@@ -90,7 +90,7 @@ Rules:
 3. Declared capability missing / deferred / version below the minimum → **refuse** (`CAP_MISSING`).
 
 **Deprecation and announcement (A1)**
-- Deprecation of fields / capabilities / protocol messages: first announce in CHANGELOG.md, then retain for at least one **MINOR** cycle (warning only); removal requires a **MAJOR** bump.
+- Deprecation of fields / capabilities / protocol messages: announce in versioned release metadata, retain for at least one **MINOR** cycle (warning only); removal requires a **MAJOR** bump.
 - Contract freeze: before entering a milestone, freeze `capabilities.json` and the Content Schema major version; during the freeze period, only MINOR additions are allowed.
 
 ## 5. Tools

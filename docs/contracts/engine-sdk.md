@@ -4,7 +4,7 @@
 - Updated: 2026-09-23
 
 > The **sole interface** the engine team provides to the content layer. Changes follow the compatibility policy in architecture overview.
-> **Scope**: pre-research implements only "enabled capabilities"; the rest are marked "deferred". See pre-research scope.
+> The registry describes released capabilities that content packs may consume. Unsupported capabilities are rejected by validation or runtime.
 
 ## 1. Version
 
