@@ -30,6 +30,23 @@
       "crossPack": true
     },
     {
+      "type": "scene",
+      "field": "triggers",
+      "targets": [
+        "trigger"
+      ],
+      "list": true,
+      "crossPack": true
+    },
+    {
+      "type": "trigger",
+      "field": "run.action",
+      "targets": [
+        "action"
+      ],
+      "crossPack": true
+    },
+    {
       "type": "poi",
       "field": "scene",
       "targets": [

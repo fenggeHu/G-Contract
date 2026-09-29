@@ -1,7 +1,7 @@
 # Contract: Remote Config & LiveOps delivery
 
 - Status: Proposed
-- Updated: 2026-09-20
+- Updated: 2026-09-29
 
 > Delivery of feature flags, MOTD, announcements and activities from the platform to clients and the runtime. Companion: [admin-panel.md](admin-panel.md). Rationale: ADR-0009.
 
@@ -44,3 +44,17 @@
 
 - Phase A (server-only) delivers storage + admin + notifications.
 - Phase B (included) adds the **G_Engine** fetch/apply (`config_get` + `Config.set_flag` + cache + offline fallback). Cross-repo: contract first, then `G_Server`, then `G_Engine`, then `G_Admin`.
+
+## 7. Ruleset delivery (content rules / config)
+
+> Companion to ADR-0014. Distinct from LiveOps flags above: **ruleset** is **content-authored, authoritative** data published through the `G_Admin` release gate; flags are operator-facing rollout controls.
+
+- **Ruleset bundle** = content-authored, versioned artifact (`{ pack, version, hash, data }`) delivered like a content package: `draft → validate → sign → publish → gray → rollback`.
+- **Authority**: the **server consumes the published ruleset projection**; gameplay results are server-authoritative (see online-and-instances.md). Clients read ruleset values via RPC `config_get` for **presentation/gating only** and MUST NOT decide authoritative outcomes.
+- **Versioning / rollback**: carried by the `G_Admin` control plane (version + hash); rollback = republish previous bundle. Signing/hash verified on load.
+- **Operators**: actions `content.ruleset.publish` / `content.ruleset.rollback` follow the [admin-panel.md](admin-panel.md) action catalog (RBAC, `approval`, `idempotency`, audit).
+- **Non-goals**: expressing gameplay logic in a ruleset (logic belongs to the [trigger model](trigger-model.md) primitives); replacing the content projection as the authority source.
+
+## 8. Status note
+
+- This document remains **Proposed**; §7 requires implementation + acceptance evidence before promotion to **Active** (see [docs/README.md](../README.md) rule 4).

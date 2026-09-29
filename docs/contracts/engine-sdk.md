@@ -46,6 +46,7 @@
 | `ui.core` | 1.0 | `autoload/ui.gd` | Generic HUD mounting (`UI.hud(parent)`) |
 | `config.flag` | 1.0 | `autoload/config.gd` | Feature flags (runtime/env vars/ProjectSettings); event `flag_changed` |
 | `conditions.core` | 1.0 | `autoload/conditions.gd` | Generic condition evaluation (all/any/not/flag/quest/item/stat/level/kv; see content-schema §27) |
+| `trigger.core` | 1.0 | `autoload/triggers.gd` | Client/offline event-to-condition-to-action bindings; server authority uses separate `server_trigger` contract |
 | `spatial.query` | 1.0 | `autoload/spatial.gd` | Uniform grid spatial index (AOI / targeting acceleration) |
 | `telemetry.event` | 1.0 | `autoload/telemetry.gd` | Structured telemetry event logging to disk (JSONL, bounded) |
 | `world.seed` | 1.0 | `autoload/rng.gd` | Runtime deterministic randomness (derive stable substreams from world `seed` root) |

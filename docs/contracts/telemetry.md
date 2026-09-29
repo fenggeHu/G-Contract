@@ -20,14 +20,14 @@ Events are categorized by **domain × side** (per GameDevMind `2.2.3`):
 
 ## 2. Existing (implemented)
 
-- `telemetry_sink` (ingest, consent-gated, capped) → `g3/telemetry_<user>`.
-- `telemetry_report` (cross-user `loop_progress` funnel aggregation).
+- `telemetry_sink` (ingest, consent-gated) → `g3/telemetry_<user>`. **Append-and-merge** up to a bounded cap (default 200 newest events); repeated uploads do not drop history.
+- `telemetry_report` (cross-user `loop_progress` funnel aggregation) → `{users, events, steps, versions, version_steps}`.
 
 ## 3. Aggregation (Postgres + Grafana — this phase)
 
 - Aggregations for the ops panel are computed via **Postgres** (mirrored/rolled-up from telemetry) and visualized in **Grafana**. No ClickHouse/Kafka in this phase (see ADR-0010).
 - Provided ops actions: `telemetry.overview` (DAU/events), `telemetry.funnel` (step counts), `telemetry.query` (filter by step/time/content).
-- **Content version dimension**: events carry `env.content` (see observability); aggregation rolls up `versions` (`{content, events}`) so operators can slice体验 by content release. `telemetry.query` accepts a `content` filter.
+- **Content version dimension**: events carry `env.content` (see observability); aggregation rolls up `versions` (`{content, events}`) and `version_steps` (`{content: {step: count}}`) so operators can compare funnels across content releases (发布前后对照). `telemetry.query` accepts a `content` filter.
 - Retention and rollup window are configured in the `admin` schema; dashboards live in Grafana.
 
 ## 4. Crash / performance

@@ -236,6 +236,12 @@
           "items": {
             "type": "string"
           }
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          }
         }
       }
     },
@@ -582,7 +588,14 @@
         "respawnSeconds": { "type": "number" },
         "scoreTarget": { "type": "integer" },
         "timeLimit": { "type": "number" },
-        "aoi": { "type": "object" }
+        "aoi": { "type": "object" },
+        "serverTriggers": {
+          "type": "array",
+          "description": "Closed server-trigger projection; validated by the server capability registry.",
+          "items": {
+            "type": "object"
+          }
+        }
       }
     },
     "npc": {
@@ -2239,6 +2252,9 @@
         },
         {
           "$ref": "#/$defs/progression_tree"
+        },
+        {
+          "$ref": "#/$defs/trigger"
         }
       ]
     },
@@ -2463,6 +2479,86 @@
           }
         }
       }
+    },
+    "trigger": {
+      "type": "object",
+      "required": [
+        "type",
+        "id",
+        "on",
+        "run"
+      ],
+      "properties": {
+        "type": {
+          "const": "trigger"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "boolean"
+        },
+        "on": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "required": ["event"],
+              "properties": {
+                "event": {
+                  "type": "string"
+                },
+                "match": {
+                  "type": "object"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "filter": {
+          "type": ["object", "array", "null"]
+        },
+        "run": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["action"],
+            "properties": {
+              "action": {
+                "$ref": "#/$defs/ref"
+              },
+              "when": {
+                "type": ["object", "array", "null"]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "authority": {
+          "enum": ["client", "offline"]
+        },
+        "flags": {
+          "type": "object",
+          "properties": {
+            "once": {
+              "type": "boolean"
+            },
+            "cooldownMs": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

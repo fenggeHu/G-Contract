@@ -48,6 +48,7 @@
     { "name": "telemetry.event", "version": "1.0", "status": "enabled" },
     { "name": "config.flag", "version": "1.0", "status": "enabled" },
     { "name": "conditions.core", "version": "1.0", "status": "enabled" },
+    { "name": "trigger.core", "version": "1.0", "status": "enabled" },
     { "name": "spatial.query", "version": "1.0", "status": "enabled" },
     { "name": "progression.tree", "version": "1.0", "status": "enabled" },
     { "name": "action.core", "version": "1.0", "status": "enabled" },
