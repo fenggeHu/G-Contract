@@ -99,7 +99,7 @@ See [content-package.md](content-package.md).
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `kind` | enum | Yes | `city/village/cave/interior` |
-| `file` | string | No | Scene file (`.tscn`) path |
+| `file` | string | No | Scene file (`.tscn`) path — **data-only**; the platform attaches the runtime by `runtime`/`pack`/`encounter` |
 | `sizeM` | {x,y} | Yes | See the scale specification |
 | `terrain` | reference | Yes | Terrain data (§4) |
 | `regions[]` | reference | No | Regions |
@@ -108,6 +108,9 @@ See [content-package.md](content-package.md).
 | `music` | reference | No | Music event |
 | `abilities[]` | reference | No | **场景技能**：本场景额外可用的技能（与玩家 `stats.abilities` ∪ 已装备 `item.grantsAbility` 合并，引擎技能栏展示，按键 1..9 施放） |
 | `entryPoints[]` | {id,pos,altitude?} | No | Entrances (city gates/cave mouths) |
+| `runtime` | enum | No | `town`/`combat`/`generic`：平台通用场景控制器的运行模式（`ScenePlayer`） |
+| `encounter` | reference | No | `runtime=combat` 时，进入的 `encounter` Def id（hides pack/encounter selection from the client） |
+| `pack` | string | No | `encounter` 所属内容包 id；缺省取本场景所在包 |
 
 ## 6. `region`
 

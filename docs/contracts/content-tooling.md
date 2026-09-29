@@ -30,11 +30,20 @@
 | `content i18n-template <pack>` | Generate/refresh the translation CSV template (preserve existing translations, fill in missing keys) |
 | `content perf` | Run the world benchmark or `--scene <id>`; optional p95/max budget gates (`--budget-p95` / `--budget-max`, 0 = no gate) |
 | `content playtest <scene>` | Headlessly auto-run a content scene and **assert no errors** (H1 quantitative gate) |
+| `content scene-run <scene>` | Headlessly run a content scene through the **platform ScenePlayer** runtime and assert it loads/ticks (A5 migration gate) |
+| `content packs` | List content packs (id/version/schema/base/def counts); used by the multi-pack delivery check |
 | `content release` | Produce `dist/release.json` (version matrix + artifact manifest) |
 | `content verify-release` | Validate that `release.json` is consistent with the contract (prerequisite for consumer-side pinning) |
 | `content bake-world` | Bake the world map overhead texture → `<pack>/world/<x>_<y>.jpg` (default 1024px/chunk; `--bake-px <n>`); accepts optional `world.procgen` inputs |
 | `content bake-report` | World-map size/quality tradeoff report (bakes px/chunk 1024/512/256 into temp; prints source JPG size + GPU texture estimate); data only, no defaults changed |
+| `content script-report` | Scan content `.gd` scripts: constants/functions/preloads plus `platform_apis` and `local_signals`; prints A5 migration readiness (`removal_candidates` = scripts with no local-logic signals) with per-signal platform coverage status |
 | `content pack-atlas` | Pack `*.atlas.json` frame manifests → atlas PNG + `sprite_atlas` Def (deterministic shelf packing; PNG frames only) |
+| `content ai generate` | Run a provider on a spec → write candidate Defs to `<out>/defs/<type>/<id>.json` + append `provenance.jsonl` (never publishes). Request includes bounded context file contents (`--context-bytes`, default 8192) so the provider sees real examples. Optional `i18n` in the response is written to `<out>/i18n.json`. |
+| `content ai verify` | Re-hash candidate files and check they match the provenance records |
+| `content ai diff` | Compare candidates against existing content: `added` / `conflict` / `unchanged` (`--strict` fails on conflict) |
+| `content ai batch` | Run generation over a specs directory, diff vs existing content, and emit `batch-report.json` (AI production baseline) |
+| `content ai apply` | Write operator-selected candidates into `<target>/ai_applied.json` (merges by `type:id`, `--all` or `--accept type:id,...`; `--overwrite` to replace differing ids); merges candidate `i18n.json` into `<pack>/i18n/translations.csv` |
+| `content quality` | Combined gate report: schema/reference validation + lint (naming/i18n/licensing) + optional provenance verification |
 
 **I/O**
 - Arguments: pack path / scene.

@@ -382,6 +382,14 @@
           "enum": ["town", "combat", "generic"],
           "description": "Platform scene executor selected by content data."
         },
+        "pack": {
+          "type": "string",
+          "description": "Content pack id owning this scene's encounter; defaults to the scene's own pack."
+        },
+        "encounter": {
+          "$ref": "#/$defs/ref",
+          "description": "Encounter Def id entered by the platform combat runtime (runtime=combat)."
+        },
         "regions": {
           "type": "array",
           "items": {

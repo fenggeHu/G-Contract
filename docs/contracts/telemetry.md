@@ -26,7 +26,8 @@ Events are categorized by **domain × side** (per GameDevMind `2.2.3`):
 ## 3. Aggregation (Postgres + Grafana — this phase)
 
 - Aggregations for the ops panel are computed via **Postgres** (mirrored/rolled-up from telemetry) and visualized in **Grafana**. No ClickHouse/Kafka in this phase (see ADR-0010).
-- Provided ops actions: `telemetry.overview` (DAU/events), `telemetry.funnel` (step counts), `telemetry.query` (filter by step/time).
+- Provided ops actions: `telemetry.overview` (DAU/events), `telemetry.funnel` (step counts), `telemetry.query` (filter by step/time/content).
+- **Content version dimension**: events carry `env.content` (see observability); aggregation rolls up `versions` (`{content, events}`) so operators can slice体验 by content release. `telemetry.query` accepts a `content` filter.
 - Retention and rollup window are configured in the `admin` schema; dashboards live in Grafana.
 
 ## 4. Crash / performance
